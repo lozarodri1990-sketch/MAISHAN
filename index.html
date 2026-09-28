@@ -29,7 +29,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
     body { background-color: var(--bg); color: var(--text-main); padding: 16px; max-width: 1200px; margin: 0 auto; }
 
-    /* Portada de Marca */
     .brand-banner-container {
       width: 100%;
       height: 180px;
@@ -96,7 +95,6 @@
     .btn-danger { background-color: #ef4444; color: white; }
     .btn-warning { background-color: #f59e0b; color: white; }
 
-    /* Dashboard Financiero */
     .finance-card {
       background: white; border: 1px solid var(--border); border-radius: var(--radius);
       padding: 18px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;
@@ -109,12 +107,10 @@
     .controls { margin-bottom: 20px; }
     .search-input { padding: 14px 18px; border: 1px solid var(--border); border-radius: 12px; font-size: 0.95rem; background: white; width: 100%; outline: none; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
 
-    /* Catálogo Grid */
     .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 22px; }
     .product-card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s ease; }
     .product-card:hover { transform: translateY(-2px); }
 
-    /* Carrusel de Galería de Imágenes */
     .gallery-container { position: relative; width: 100%; height: 240px; background-color: #f8fafc; overflow: hidden; }
     .product-img { width: 100%; height: 100%; object-fit: cover; }
     .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(15, 23, 42, 0.6); color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; z-index: 5; }
@@ -139,7 +135,6 @@
     .card-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
     .action-row { display: flex; gap: 6px; }
 
-    /* Modales */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); display: flex; justify-content: center; align-items: center; padding: 16px; z-index: 100; visibility: hidden; opacity: 0; transition: all 0.2s ease; backdrop-filter: blur(3px); }
     .modal-overlay.active { visibility: visible; opacity: 1; }
     .modal { background: white; padding: 22px; border-radius: var(--radius); width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); }
@@ -162,12 +157,12 @@
     .sales-list { list-style: none; margin-top: 10px; max-height: 300px; overflow-y: auto; }
     .sales-item { padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; }
 
+    .loading-banner { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; text-align: center; padding: 10px; border-radius: 10px; margin-bottom: 15px; font-weight: 600; font-size: 0.85rem; }
     .admin-only { display: none; }
   </style>
 </head>
 <body>
 
-  <!-- Portada / Banner de la Marca -->
   <div class="brand-banner-container">
     <img id="bannerImg" class="brand-banner-img" src="https://via.placeholder.com/1200x400/0f172a/ffffff?text=MAISHAN" alt="Portada MAISHAN">
     <div class="brand-overlay">
@@ -175,6 +170,8 @@
       <div class="brand-subtitle">INDUMENTARIA & ESTILO</div>
     </div>
   </div>
+
+  <div id="syncStatus" class="loading-banner">🔄 Conectando con el catálogo en la nube...</div>
 
   <header>
     <div class="header-btns">
@@ -187,7 +184,6 @@
     </div>
   </header>
 
-  <!-- Panel Financiero -->
   <div class="finance-card admin-only" id="financePanel">
     <div class="finance-item">
       <label>No Vendido (Stock Activo)</label>
@@ -209,7 +205,6 @@
 
   <main class="catalog-grid" id="catalogGrid"></main>
 
-  <!-- Modal Cargar Foto de Portada -->
   <div class="modal-overlay" id="bannerModal">
     <div class="modal">
       <h2>Cargar Foto de Portada de la Marca</h2>
@@ -225,7 +220,6 @@
     </div>
   </div>
 
-  <!-- Modal Cargar/Editar Producto -->
   <div class="modal-overlay" id="productModal">
     <div class="modal">
       <h2 id="modalTitle">Cargar Nuevo Producto</h2>
@@ -272,7 +266,6 @@
     </div>
   </div>
 
-  <!-- Modal Historial de Ventas -->
   <div class="modal-overlay" id="salesModal">
     <div class="modal">
       <h2>Registro de Ventas Realizadas</h2>
@@ -284,7 +277,6 @@
     </div>
   </div>
 
-  <!-- Plantilla Oculta para PDF -->
   <div id="pdfExportTemplate" style="display:none; padding:20px; font-family:sans-serif;">
     <h1 style="text-align:center; color:#0f172a;">MAISHAN INDUMENTARIA & ESTILO</h1>
     <p style="text-align:center; color:#64748b; margin-bottom:20px;">Catálogo Oficial de Productos</p>
@@ -292,7 +284,12 @@
   </div>
 
   <script>
-    var products = JSON.parse(localStorage.getItem('maishan_catalog_products')) || [];
+    // CONFIGURACIÓN DE CONEXIÓN A LA NUBE
+    var BIN_ID = "6abafce0ffd5d16053398fa8";
+    var MASTER_KEY = "$2a$10$oA.Tk9hUqu63fQrGnMNL6enO8IElcJyI.QHFGCBTxcaxOz0iyu3vG";
+    var API_URL = "https://api.jsonbin.io/v3/b/" + BIN_ID;
+
+    var products = [];
     var salesRecords = JSON.parse(localStorage.getItem('maishan_sales_records')) || [];
     var brandBanner = localStorage.getItem('maishan_brand_banner') || '';
     var isAdmin = false;
@@ -304,7 +301,69 @@
       document.getElementById('bannerImg').src = brandBanner;
     }
 
-    // Cargar Múltiples Fotos de Prenda
+    // Cargar datos desde la nube al abrir la página
+    function fetchProductsFromCloud() {
+      var statusEl = document.getElementById('syncStatus');
+      statusEl.style.display = 'block';
+      statusEl.innerText = '🔄 Actualizando prendas en vivo...';
+
+      fetch(API_URL + "/latest", {
+        headers: { "X-Master-Key": MASTER_KEY }
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (Array.isArray(data.record)) {
+          products = data.record;
+        } else {
+          products = [];
+        }
+        statusEl.style.display = 'none';
+        renderCatalog();
+        updateFinances();
+      })
+      .catch(function(err) {
+        console.error(err);
+        statusEl.innerText = '⚠️ Error al conectar con la nube. Mostrando catálogo local.';
+        setTimeout(function() { statusEl.style.display = 'none'; }, 3000);
+      });
+    }
+
+    // Guardar datos en la nube al hacer cambios
+    function saveProducts() {
+      var statusEl = document.getElementById('syncStatus');
+      statusEl.style.display = 'block';
+      statusEl.innerText = '☁️ Guardando cambios en la nube...';
+
+      fetch(API_URL, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Master-Key": MASTER_KEY
+        },
+        body: JSON.stringify(products)
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        statusEl.style.background = '#dcfce7';
+        statusEl.style.color = '#166534';
+        statusEl.innerText = '✅ ¡Guardado en la nube! Todos tus clientes ya ven los cambios.';
+        setTimeout(function() { 
+          statusEl.style.display = 'none'; 
+          statusEl.style.background = '#eff6ff';
+          statusEl.style.color = '#1e40af';
+        }, 2500);
+        renderCatalog();
+        updateFinances();
+      })
+      .catch(function(err) {
+        console.error(err);
+        alert('Hubo un problema al guardar en la nube. Verificá tu conexión.');
+        statusEl.style.display = 'none';
+      });
+
+      localStorage.setItem('maishan_sales_records', JSON.stringify(salesRecords));
+    }
+
     document.getElementById('prodFileInput').addEventListener('change', function(e) {
       var files = Array.from(e.target.files);
       if (files.length > 0) {
@@ -339,13 +398,6 @@
         reader.readAsDataURL(file);
       }
     });
-
-    function saveProducts() {
-      localStorage.setItem('maishan_catalog_products', JSON.stringify(products));
-      localStorage.setItem('maishan_sales_records', JSON.stringify(salesRecords));
-      renderCatalog();
-      updateFinances();
-    }
 
     function getTotalStock(matrix) {
       var total = 0;
@@ -415,12 +467,11 @@
     window.toggleVisibility = function(prodId) {
       var prod = products.find(function(p) { return p.id === prodId; });
       if (prod) {
-        prod.visible = !prod.visible;
+        prod.visible = (prod.visible === false) ? true : false;
         saveProducts();
       }
     };
 
-    // Navegar Galería de Fotos del Producto
     window.changeImageIndex = function(prodId, direction) {
       var prod = products.find(function(p) { return p.id === prodId; });
       if (prod && prod.imgs && prod.imgs.length > 1) {
@@ -477,7 +528,7 @@
       var search = document.getElementById('searchInput').value.toLowerCase();
       
       var filtered = products.filter(function(p) {
-        var matchesSearch = p.name.toLowerCase().indexOf(search) !== -1;
+        var matchesSearch = p.name ? p.name.toLowerCase().indexOf(search) !== -1 : false;
         var isVisible = isAdmin ? true : (p.visible !== false);
         return matchesSearch && isVisible;
       });
@@ -493,19 +544,23 @@
         var currentIndex = activeImageIndexes[p.id] || 0;
         
         var variantsHTML = '';
-        p.colores.forEach(function(c) {
-          variantsHTML += '<div class="color-row"><strong>' + c + ':</strong> ';
-          p.talles.forEach(function(t) {
-            var cant = p.stockMatrix[c] ? (p.stockMatrix[c][t] || 0) : 0;
-            variantsHTML += '<span class="variant-item">' + t + ': <strong>' + cant + ' u.</strong> ';
-            if (isAdmin) {
-              variantsHTML += '<button class="stock-btn" onclick="updateVariantStock(' + p.id + ', \'' + c + '\', \'' + t + '\', -1)">-</button> ' +
-                '<button class="stock-btn" onclick="updateVariantStock(' + p.id + ', \'' + c + '\', \'' + t + '\', 1)">+</button>';
+        if (p.colores) {
+          p.colores.forEach(function(c) {
+            variantsHTML += '<div class="color-row"><strong>' + c + ':</strong> ';
+            if (p.talles) {
+              p.talles.forEach(function(t) {
+                var cant = p.stockMatrix && p.stockMatrix[c] ? (p.stockMatrix[c][t] || 0) : 0;
+                variantsHTML += '<span class="variant-item">' + t + ': <strong>' + cant + ' u.</strong> ';
+                if (isAdmin) {
+                  variantsHTML += '<button class="stock-btn" onclick="updateVariantStock(' + p.id + ', \'' + c + '\', \'' + t + '\', -1)">-</button> ' +
+                    '<button class="stock-btn" onclick="updateVariantStock(' + p.id + ', \'' + c + '\', \'' + t + '\', 1)">+</button>';
+                }
+                variantsHTML += '</span>';
+              });
             }
-            variantsHTML += '</span>';
+            variantsHTML += '</div>';
           });
-          variantsHTML += '</div>';
-        });
+        }
 
         var galleryHTML = '<div class="gallery-container">' +
           '<img id="img-' + p.id + '" src="' + imagesList[currentIndex] + '" alt="' + p.name + '" class="product-img">';
@@ -584,8 +639,8 @@
       document.getElementById('editProductId').value = prod.id;
       document.getElementById('prodName').value = prod.name;
       document.getElementById('prodPrice').value = prod.price;
-      document.getElementById('prodColores').value = prod.colores.join(', ');
-      document.getElementById('prodTalles').value = prod.talles.join(', ');
+      document.getElementById('prodColores').value = prod.colores ? prod.colores.join(', ') : '';
+      document.getElementById('prodTalles').value = prod.talles ? prod.talles.join(', ') : '';
       document.getElementById('prodVisible').checked = (prod.visible !== false);
       document.getElementById('modalTitle').innerText = 'Editar Producto';
 
@@ -606,7 +661,7 @@
         document.querySelectorAll('.matrix-input').forEach(function(input) {
           var color = input.getAttribute('data-color');
           var talle = input.getAttribute('data-talle');
-          if (prod.stockMatrix[color] && prod.stockMatrix[color][talle] !== undefined) {
+          if (prod.stockMatrix && prod.stockMatrix[color] && prod.stockMatrix[color][talle] !== undefined) {
             input.value = prod.stockMatrix[color][talle];
           }
         });
@@ -635,7 +690,7 @@
           '<div>' +
             '<h3 style="margin:0;">' + p.name + '</h3>' +
             '<p style="margin:4px 0; font-weight:bold; color:#2563eb;">$' + p.price.toLocaleString('es-AR') + '</p>' +
-            '<small>Colores: ' + p.colores.join(', ') + ' | Talles: ' + p.talles.join(', ') + '</small>' +
+            '<small>Colores: ' + (p.colores ? p.colores.join(', ') : '') + ' | Talles: ' + (p.talles ? p.talles.join(', ') : '') + '</small>' +
           '</div>';
         content.appendChild(item);
       });
@@ -750,8 +805,9 @@
     };
 
     document.getElementById('searchInput').oninput = renderCatalog;
-    renderCatalog();
-    updateFinances();
+
+    // Iniciar app consultando la nube
+    fetchProductsFromCloud();
   </script>
 </body>
 </html>
