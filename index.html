@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>MAISHAN INDUMENTARIA & ESTILO - Catálogo & Control de Stock</title>
 
   <!-- Google Fonts -->
@@ -47,7 +47,7 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       padding-bottom: 16px;
       border-bottom: 2px solid var(--border);
       text-align: center;
@@ -63,7 +63,7 @@
     }
 
     .brand-title {
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       font-weight: 800;
       letter-spacing: 0.5px;
       color: var(--primary);
@@ -112,14 +112,8 @@
       margin-bottom: 20px;
     }
 
-    @media (min-width: 600px) {
-      .controls {
-        flex-direction: row;
-      }
-    }
-
     .search-input {
-      padding: 10px 14px;
+      padding: 12px 14px;
       border: 1px solid var(--border);
       border-radius: 8px;
       font-size: 0.9rem;
@@ -131,7 +125,7 @@
     /* Grid de Catálogo */
     .catalog-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 20px;
     }
 
@@ -147,48 +141,83 @@
 
     .product-img {
       width: 100%;
-      height: 180px;
+      height: 220px;
       object-fit: cover;
       background-color: #f1f5f9;
     }
 
     .product-info {
-      padding: 14px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
       flex: 1;
     }
 
+    .product-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
     .product-title {
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       font-weight: 700;
       color: var(--text-main);
     }
 
     .product-price {
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       font-weight: 800;
       color: var(--accent);
     }
 
     .variants-summary {
       background: #f8fafc;
-      padding: 8px;
-      border-radius: 6px;
-      font-size: 0.8rem;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 0.82rem;
       color: var(--text-muted);
-      border: 1px dashed var(--border);
+      border: 1px solid var(--border);
     }
 
-    .variant-tag {
-      display: inline-block;
+    .color-row {
+      margin-bottom: 8px;
+    }
+    .color-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .variant-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
       background: white;
       border: 1px solid var(--border);
-      padding: 2px 6px;
-      border-radius: 4px;
-      margin: 2px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      margin: 3px 2px;
       font-weight: 600;
+    }
+
+    .stock-btn {
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: #f1f5f9;
+      color: #0f172a;
+      font-weight: 800;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stock-btn:active {
+      background: var(--accent);
+      color: white;
     }
 
     .stock-badge {
@@ -259,9 +288,9 @@
       margin-bottom: 4px;
     }
 
-    .form-group input {
+    .form-group input, .form-group file {
       width: 100%;
-      padding: 8px 10px;
+      padding: 10px;
       border: 1px solid var(--border);
       border-radius: 6px;
       font-size: 0.85rem;
@@ -299,11 +328,21 @@
     }
 
     .matrix-table input {
-      width: 60px;
+      width: 50px;
       text-align: center;
       padding: 4px;
       border: 1px solid var(--border);
       border-radius: 4px;
+    }
+
+    .image-preview {
+      width: 100%;
+      height: 140px;
+      border-radius: 8px;
+      object-fit: cover;
+      margin-top: 8px;
+      display: none;
+      border: 1px solid var(--border);
     }
 
     .empty-state {
@@ -328,34 +367,37 @@
   </header>
 
   <div class="controls">
-    <input type="text" id="searchInput" class="search-input" placeholder="Buscar por prenda, color o talle...">
+    <input type="text" id="searchInput" class="search-input" placeholder="Buscar prenda, color o talle...">
   </div>
 
   <main class="catalog-grid" id="catalogGrid"></main>
 
-  <!-- Modal Nuevo Producto con Matriz -->
+  <!-- Modal Nuevo Producto -->
   <div class="modal-overlay" id="productModal">
     <div class="modal">
-      <h2>Cargar Producto (Talles & Colores)</h2>
+      <h2>Cargar Producto (Fotos & Stock)</h2>
       <form id="productForm">
         <div class="form-group">
           <label>Nombre del Producto</label>
-          <input type="text" id="prodName" required placeholder="Ej. Remera Básica M/C">
+          <input type="text" id="prodName" required placeholder="Ej. Remera Oversize Algodón">
         </div>
+
         <div class="form-row">
           <div class="form-group">
             <label>Precio ($)</label>
-            <input type="number" id="prodPrice" required placeholder="15000">
+            <input type="number" id="prodPrice" required placeholder="18000">
           </div>
           <div class="form-group">
-            <label>Link Foto (Opcional)</label>
-            <input type="url" id="prodImg" placeholder="https://...">
+            <label>Foto de la Prenda</label>
+            <input type="file" id="prodFileInput" accept="image/*">
           </div>
         </div>
 
-        <div class="form-group">
+        <img id="previewImg" class="image-preview" alt="Vista previa">
+
+        <div class="form-group" style="margin-top: 10px;">
           <label>Colores (separados por coma)</label>
-          <input type="text" id="prodColores" required placeholder="Ej. Negro, Blanco, Rojo">
+          <input type="text" id="prodColores" required placeholder="Ej. Negro, Blanco, Gris">
         </div>
 
         <div class="form-group">
@@ -377,10 +419,10 @@
     </div>
   </div>
 
-  <!-- Modal Admin Inventario -->
+  <!-- Modal Admin -->
   <div class="modal-overlay" id="adminModal">
     <div class="modal">
-      <h2>MAISHAN - Control de Stock</h2>
+      <h2>MAISHAN - Control General</h2>
       <div id="adminStockList" style="max-height: 400px; overflow-y: auto;"></div>
       <div class="modal-actions">
         <button type="button" class="btn btn-outline" id="btnCloseAdmin">Cerrar</button>
@@ -389,23 +431,23 @@
   </div>
 
   <script>
-    const initialProducts = [
-      {
-        id: 1,
-        name: 'Remera Oversize Algodón',
-        price: 18000,
-        img: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500',
-        colores: ['Negro', 'Blanco', 'Gris'],
-        talles: ['S', 'M', 'L', 'XL', 'XXL'],
-        stockMatrix: {
-          'Negro': { 'S': 3, 'M': 5, 'L': 4, 'XL': 2, 'XXL': 0 },
-          'Blanco': { 'S': 2, 'M': 4, 'L': 6, 'XL': 3, 'XXL': 1 },
-          'Gris': { 'S': 0, 'M': 2, 'L': 3, 'XL': 1, 'XXL': 0 }
-        }
-      }
-    ];
+    let products = JSON.parse(localStorage.getItem('maishan_catalog_products')) || [];
+    let currentImageBase64 = '';
 
-    let products = JSON.parse(localStorage.getItem('maishan_catalog_products')) || initialProducts;
+    // Manejar previsualización de imágenes desde la cámara o galería
+    document.getElementById('prodFileInput').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          currentImageBase64 = evt.target.result;
+          const preview = document.getElementById('previewImg');
+          preview.src = currentImageBase64;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
 
     function saveProducts() {
       localStorage.setItem('maishan_catalog_products', JSON.stringify(products));
@@ -422,6 +464,18 @@
       return total;
     }
 
+    // Cambiar stock dinámico (+1 o -1)
+    window.updateVariantStock = function(prodId, color, talle, change) {
+      const prod = products.find(p => p.id === prodId);
+      if (prod && prod.stockMatrix[color] && prod.stockMatrix[color][talle] !== undefined) {
+        let current = parseInt(prod.stockMatrix[color][talle]) || 0;
+        let updated = current + change;
+        if (updated < 0) updated = 0;
+        prod.stockMatrix[color][talle] = updated;
+        saveProducts();
+      }
+    };
+
     function renderCatalog() {
       const grid = document.getElementById('catalogGrid');
       const search = document.getElementById('searchInput').value.toLowerCase();
@@ -430,20 +484,26 @@
       const filtered = products.filter(p => p.name.toLowerCase().includes(search));
 
       if (filtered.length === 0) {
-        grid.innerHTML = `<div class="empty-state"><p>No hay productos cargados.</p></div>`;
+        grid.innerHTML = `<div class="empty-state"><p>No hay prendas cargadas en el catálogo.</p></div>`;
         return;
       }
 
       filtered.forEach(p => {
         const totalStock = getTotalStock(p.stockMatrix);
-        const defaultImg = 'https://via.placeholder.com/300x200?text=MAISHAN';
+        const defaultImg = 'https://via.placeholder.com/300x220?text=MAISHAN';
         
         let variantsHTML = '';
         p.colores.forEach(c => {
-          variantsHTML += `<div><strong>${c}:</strong> `;
+          variantsHTML += `<div class="color-row"><strong>${c}:</strong> `;
           p.talles.forEach(t => {
-            const cant = p.stockMatrix[c] ? p.stockMatrix[c][t] || 0 : 0;
-            variantsHTML += `<span class="variant-tag">${t}: ${cant}u</span> `;
+            const cant = p.stockMatrix[c] ? (p.stockMatrix[c][t] || 0) : 0;
+            variantsHTML += `
+              <span class="variant-item">
+                ${t}: <strong>${cant}</strong>
+                <button class="stock-btn" onclick="updateVariantStock(${p.id}, '${c}', '${t}', -1)">-</button>
+                <button class="stock-btn" onclick="updateVariantStock(${p.id}, '${c}', '${t}', 1)">+</button>
+              </span>
+            `;
           });
           variantsHTML += `</div>`;
         });
@@ -453,13 +513,15 @@
         card.innerHTML = `
           <img src="${p.img || defaultImg}" alt="${p.name}" class="product-img" onerror="this.src='${defaultImg}'">
           <div class="product-info">
-            <div class="product-title">${p.name}</div>
+            <div class="product-header">
+              <div class="product-title">${p.name}</div>
+            </div>
             <div class="product-price">$${Number(p.price).toLocaleString('es-AR')}</div>
             <div class="variants-summary">
               ${variantsHTML}
             </div>
             <div class="stock-badge ${totalStock > 0 ? 'in-stock' : 'out-stock'}">
-              ${totalStock > 0 ? `Stock Total: ${totalStock} u.` : 'Agotado'}
+              ${totalStock > 0 ? `Stock Total: ${totalStock} u.` : 'Sin Stock'}
             </div>
           </div>
         `;
@@ -472,7 +534,7 @@
       const tallesRaw = document.getElementById('prodTalles').value;
 
       if (!coloresRaw || !tallesRaw) {
-        alert('Por favor completá los colores y los talles separados por coma.');
+        alert('Ingresá los colores y talles separados por coma.');
         return;
       }
 
@@ -502,7 +564,9 @@
       productModal.classList.remove('active');
       document.getElementById('productForm').reset();
       document.getElementById('matrixContainer').innerHTML = '';
+      document.getElementById('previewImg').style.display = 'none';
       document.getElementById('btnSaveProduct').style.display = 'none';
+      currentImageBase64 = '';
     };
 
     document.getElementById('productForm').onsubmit = (e) => {
@@ -525,7 +589,7 @@
         id: Date.now(),
         name: document.getElementById('prodName').value,
         price: parseFloat(document.getElementById('prodPrice').value),
-        img: document.getElementById('prodImg').value,
+        img: currentImageBase64,
         colores: colores,
         talles: talles,
         stockMatrix: stockMatrix
@@ -536,7 +600,9 @@
       productModal.classList.remove('active');
       document.getElementById('productForm').reset();
       document.getElementById('matrixContainer').innerHTML = '';
+      document.getElementById('previewImg').style.display = 'none';
       document.getElementById('btnSaveProduct').style.display = 'none';
+      currentImageBase64 = '';
     };
 
     const adminModal = document.getElementById('adminModal');
@@ -552,19 +618,20 @@
 
       products.forEach(p => {
         const item = document.createElement('div');
-        item.style.cssText = 'border-bottom: 1px solid #e2e8f0; padding: 10px 0;';
+        item.style.cssText = 'border-bottom: 1px solid #e2e8f0; padding: 12px 0; display:flex; justify-content:space-between; align-items:center;';
         item.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
-            <strong>${p.name}</strong>
-            <button class="btn btn-outline" style="color:red; padding:4px 8px; font-size:0.75rem;" onclick="deleteProduct(${p.id})">Eliminar</button>
+          <div>
+            <strong>${p.name}</strong><br>
+            <small style="color:#64748b;">Stock total: ${getTotalStock(p.stockMatrix)} unidades</small>
           </div>
+          <button class="btn btn-outline" style="color:red; padding:6px 10px; font-size:0.75rem;" onclick="deleteProduct(${p.id})">Eliminar</button>
         `;
         container.appendChild(item);
       });
     }
 
     window.deleteProduct = (id) => {
-      if (confirm('¿Seguro que querés borrar esta prenda del catálogo?')) {
+      if (confirm('¿Eliminar esta prenda del catálogo?')) {
         products = products.filter(p => p.id !== id);
         saveProducts();
         renderAdminList();
@@ -572,7 +639,7 @@
     };
 
     document.getElementById('searchInput').oninput = renderCatalog;
-    saveProducts();
+    renderCatalog();
   </script>
 </body>
 </html>
