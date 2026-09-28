@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     :root {
       --primary: #0f172a;
@@ -26,31 +27,50 @@
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
     body { background-color: var(--bg); color: var(--text-main); padding: 16px; max-width: 1200px; margin: 0 auto; }
+    
     header { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 2px solid var(--border); text-align: center; }
     @media (min-width: 600px) { header { flex-direction: row; justify-content: space-between; align-items: center; text-align: left; } }
+    
     .brand-title { font-size: 1.4rem; font-weight: 800; color: var(--primary); text-transform: uppercase; }
     .brand-subtitle { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
-    .header-btns { display: flex; flex-wrap: wrap; gap: 8px; }
-    .btn { padding: 10px 14px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; font-size: 0.85rem; flex: 1; text-align: center; }
+    
+    .header-btns { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .btn { padding: 10px 14px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; font-size: 0.85rem; text-align: center; }
     .btn-primary { background-color: var(--accent); color: white; }
     .btn-whatsapp { background-color: var(--whatsapp); color: white; }
     .btn-outline { background: white; border: 1px solid var(--border); color: var(--text-main); }
+    .btn-danger { background-color: #ef4444; color: white; }
+
+    /* Dashboard Financiero */
+    .finance-card {
+      background: white; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 16px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;
+      box-shadow: var(--shadow);
+    }
+    .finance-item { text-align: center; }
+    .finance-item label { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+    .finance-item val { display: block; font-size: 1.3rem; font-weight: 800; color: var(--primary); margin-top: 4px; }
+
     .controls { margin-bottom: 20px; }
     .search-input { padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; background: white; width: 100%; outline: none; }
+    
     .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
     .product-card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; }
     .product-img { width: 100%; height: 220px; object-fit: cover; background-color: #f1f5f9; }
     .product-info { padding: 16px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
     .product-title { font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
     .product-price { font-size: 1.25rem; font-weight: 800; color: var(--accent); }
+    
     .variants-summary { background: #f8fafc; padding: 10px; border-radius: 8px; font-size: 0.82rem; color: var(--text-muted); border: 1px solid var(--border); }
     .color-row { margin-bottom: 8px; }
     .color-row:last-child { margin-bottom: 0; }
     .variant-item { display: inline-flex; align-items: center; gap: 4px; background: white; border: 1px solid var(--border); padding: 4px 8px; border-radius: 6px; margin: 3px 2px; font-weight: 600; }
+    
     .stock-btn { width: 22px; height: 22px; border-radius: 4px; border: 1px solid var(--border); background: #f1f5f9; color: #0f172a; font-weight: 800; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
     .stock-badge { align-self: start; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
     .in-stock { background-color: var(--success-bg); color: var(--success-text); }
     .out-stock { background-color: var(--danger-bg); color: var(--danger-text); }
+    
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; padding: 16px; z-index: 100; visibility: hidden; opacity: 0; transition: all 0.2s ease; }
     .modal-overlay.active { visibility: visible; opacity: 1; }
     .modal { background: white; padding: 20px; border-radius: var(--radius); width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
@@ -60,12 +80,15 @@
     .form-group input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.85rem; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+    
     .matrix-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
     .matrix-table th, .matrix-table td { padding: 8px; text-align: center; border: 1px solid var(--border); font-size: 0.8rem; }
     .matrix-table th { background: #f1f5f9; font-weight: 700; }
     .matrix-table input { width: 50px; text-align: center; padding: 4px; border: 1px solid var(--border); border-radius: 4px; }
     .image-preview { width: 100%; height: 140px; border-radius: 8px; object-fit: cover; margin-top: 8px; display: none; border: 1px solid var(--border); }
     .empty-state { text-align: center; padding: 40px; color: var(--text-muted); grid-column: 1 / -1; }
+    
+    .admin-only { display: none; }
   </style>
 </head>
 <body>
@@ -76,11 +99,28 @@
       <div class="brand-subtitle">INDUMENTARIA & ESTILO</div>
     </div>
     <div class="header-btns">
-      <button class="btn btn-whatsapp" id="btnShareCatalog">📲 Enviar Catálogo</button>
-      <button class="btn btn-outline" id="btnAdmin">⚙️ Inventario</button>
-      <button class="btn btn-primary" id="btnAdd">➕ Nuevo Producto</button>
+      <button class="btn btn-whatsapp" id="btnShareCatalog">📲 Compartir Catálogo</button>
+      <button class="btn btn-outline" id="btnPrintPDF">🖨️ PDF Catálogo</button>
+      <button class="btn btn-outline" id="btnToggleAdmin">🔐 Modo Admin</button>
+      <button class="btn btn-primary admin-only" id="btnAdd">➕ Nuevo Producto</button>
     </div>
   </header>
+
+  <!-- Panel Financiero (Solo Admin) -->
+  <div class="finance-card admin-only" id="financePanel">
+    <div class="finance-item">
+      <label>Valor Stock Total</label>
+      <val id="valStockTotal">$0</val>
+    </div>
+    <div class="finance-item">
+      <label>Unidades Vendidas</label>
+      <val id="valUnitsSold">0 u.</val>
+    </div>
+    <div class="finance-item">
+      <label>Total Recaudado</label>
+      <val id="valTotalRevenue">$0</val>
+    </div>
+  </div>
 
   <div class="controls">
     <input type="text" id="searchInput" class="search-input" placeholder="Buscar prenda, color o talle...">
@@ -88,13 +128,14 @@
 
   <main class="catalog-grid" id="catalogGrid"></main>
 
+  <!-- Modal Nuevo Producto -->
   <div class="modal-overlay" id="productModal">
     <div class="modal">
-      <h2>Cargar Producto</h2>
+      <h2>Cargar Nuevo Producto</h2>
       <form id="productForm">
         <div class="form-group">
           <label>Nombre del Producto</label>
-          <input type="text" id="prodName" required placeholder="Ej. Remera Oversize Algodón">
+          <input type="text" id="prodName" required placeholder="Ej. Remera Oversize">
         </div>
         <div class="form-row">
           <div class="form-group">
@@ -116,29 +157,28 @@
           <input type="text" id="prodTalles" required placeholder="Ej. S, M, L">
         </div>
         <button type="button" class="btn btn-outline" id="btnGenerateMatrix" style="width: 100%; margin-top: 8px;">
-          ⚡ Generar Cantidades
+          ⚡ Generar Cantidades por Talle
         </button>
         <div id="matrixContainer" style="margin-top: 14px;"></div>
         <div class="modal-actions">
           <button type="button" class="btn btn-outline" id="btnCancelProduct">Cancelar</button>
-          <button type="submit" class="btn btn-primary" id="btnSaveProduct" style="display: none;">Guardar</button>
+          <button type="submit" class="btn btn-primary" id="btnSaveProduct" style="display: none;">Guardar Producto</button>
         </div>
       </form>
     </div>
   </div>
 
-  <div class="modal-overlay" id="adminModal">
-    <div class="modal">
-      <h2>MAISHAN - Control General</h2>
-      <div id="adminStockList" style="max-height: 400px; overflow-y: auto;"></div>
-      <div class="modal-actions">
-        <button type="button" class="btn btn-outline" id="btnCloseAdmin">Cerrar</button>
-      </div>
-    </div>
+  <!-- Plantilla oculta para exportar PDF -->
+  <div id="pdfExportTemplate" style="display:none; padding:20px; font-family:sans-serif;">
+    <h1 style="text-align:center; color:#0f172a;">MAISHAN INDUMENTARIA & ESTILO</h1>
+    <p style="text-align:center; color:#64748b; margin-bottom:20px;">Catálogo Completo de Productos</p>
+    <div id="pdfCatalogContent"></div>
   </div>
 
   <script>
     var products = JSON.parse(localStorage.getItem('maishan_catalog_products')) || [];
+    var salesHistory = JSON.parse(localStorage.getItem('maishan_sales_history')) || { units: 0, revenue: 0 };
+    var isAdmin = false;
     var currentImageBase64 = '';
 
     document.getElementById('prodFileInput').addEventListener('change', function(e) {
@@ -157,7 +197,9 @@
 
     function saveProducts() {
       localStorage.setItem('maishan_catalog_products', JSON.stringify(products));
+      localStorage.setItem('maishan_sales_history', JSON.stringify(salesHistory));
       renderCatalog();
+      updateFinances();
     }
 
     function getTotalStock(matrix) {
@@ -170,28 +212,65 @@
       return total;
     }
 
+    function updateFinances() {
+      var totalStockVal = 0;
+      products.forEach(function(p) {
+        totalStockVal += (getTotalStock(p.stockMatrix) * p.price);
+      });
+      document.getElementById('valStockTotal').innerText = '$' + totalStockVal.toLocaleString('es-AR');
+      document.getElementById('valUnitsSold').innerText = salesHistory.units + ' u.';
+      document.getElementById('valTotalRevenue').innerText = '$' + salesHistory.revenue.toLocaleString('es-AR');
+    }
+
     window.updateVariantStock = function(prodId, color, talle, change) {
       var prod = products.find(function(p) { return p.id === prodId; });
       if (prod && prod.stockMatrix[color] && prod.stockMatrix[color][talle] !== undefined) {
         var current = parseInt(prod.stockMatrix[color][talle]) || 0;
         var updated = current + change;
         if (updated < 0) updated = 0;
+
+        // Si se descuenta stock (venta realizada por el admin)
+        if (change === -1 && current > 0) {
+          salesHistory.units += 1;
+          salesHistory.revenue += prod.price;
+        }
+
         prod.stockMatrix[color][talle] = updated;
         saveProducts();
       }
     };
 
     window.orderViaWhatsApp = function(prodName, price) {
-      var msg = 'Hola MAISHAN! Quiero consultar por la prenda: ' + prodName + ' ($' + price.toLocaleString('es-AR') + ')';
+      var msg = 'Hola MAISHAN! Quisiera encargar la prenda: ' + prodName + ' ($' + price.toLocaleString('es-AR') + ')';
       var url = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(msg);
       window.open(url, '_blank');
     };
 
     document.getElementById('btnShareCatalog').onclick = function() {
       var catalogURL = window.location.href;
-      var msg = '¡Hola! Te comparto nuestro catálogo virtual de MAISHAN INDUMENTARIA & ESTILO 👇\n' + catalogURL;
+      var msg = '¡Hola! Te comparto el catálogo virtual de MAISHAN INDUMENTARIA & ESTILO 👇\n' + catalogURL;
       var url = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(msg);
       window.open(url, '_blank');
+    };
+
+    // Alternar Modo Admin con Contraseña
+    document.getElementById('btnToggleAdmin').onclick = function() {
+      if (!isAdmin) {
+        var pass = prompt('Ingresá la contraseña de Administrador:');
+        if (pass === '1234') {
+          isAdmin = true;
+          document.getElementById('btnToggleAdmin').innerText = '🔓 Salir Admin';
+          document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = 'block'; });
+          renderCatalog();
+        } else {
+          alert('Contraseña incorrecta');
+        }
+      } else {
+        isAdmin = false;
+        document.getElementById('btnToggleAdmin').innerText = '🔐 Modo Admin';
+        document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = 'none'; });
+        renderCatalog();
+      }
     };
 
     function renderCatalog() {
@@ -204,7 +283,7 @@
       });
 
       if (filtered.length === 0) {
-        grid.innerHTML = '<div class="empty-state"><p>No hay prendas cargadas en el catálogo.</p></div>';
+        grid.innerHTML = '<div class="empty-state"><p>No hay prendas disponibles en el catálogo.</p></div>';
         return;
       }
 
@@ -217,9 +296,12 @@
           variantsHTML += '<div class="color-row"><strong>' + c + ':</strong> ';
           p.talles.forEach(function(t) {
             var cant = p.stockMatrix[c] ? (p.stockMatrix[c][t] || 0) : 0;
-            variantsHTML += '<span class="variant-item">' + t + ': <strong>' + cant + '</strong> ' +
-              '<button class="stock-btn" onclick="updateVariantStock(' + p.id + ', \'' + c + '\', \'' + t + '\', -1)">-</button> ' +
-              '<button class="stock-btn" onclick="updateVariantStock(' + p.id + ', \'' + c + '\', \'' + t + '\', 1)">+</button></span>';
+            variantsHTML += '<span class="variant-item">' + t + ': <strong>' + cant + ' u.</strong> ';
+            if (isAdmin) {
+              variantsHTML += '<button class="stock-btn" onclick="updateVariantStock(' + p.id + ', \'' + c + '\', \'' + t + '\', -1)">-</button> ' +
+                '<button class="stock-btn" onclick="updateVariantStock(' + p.id + ', \'' + c + '\', \'' + t + '\', 1)">+</button>';
+            }
+            variantsHTML += '</span>';
           });
           variantsHTML += '</div>';
         });
@@ -234,14 +316,48 @@
             '<div class="variants-summary">' + variantsHTML + '</div>' +
             '<div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">' +
               '<div class="stock-badge ' + (totalStock > 0 ? 'in-stock' : 'out-stock') + '">' +
-                (totalStock > 0 ? 'Stock: ' + totalStock + ' u.' : 'Sin Stock') +
+                (totalStock > 0 ? 'Disponible' : 'Sin Stock') +
               '</div>' +
-              '<button class="btn btn-whatsapp" style="padding:6px 10px; font-size:0.75rem;" onclick="orderViaWhatsApp(\'' + p.name + '\', ' + p.price + ')">💬 Encargar</button>' +
+              '<button class="btn btn-whatsapp" style="padding:6px 10px; font-size:0.75rem;" onclick="orderViaWhatsApp(\'' + p.name + '\', ' + p.price + ')">💬 Pedir por WhatsApp</button>' +
             '</div>' +
           '</div>';
         grid.appendChild(card);
       });
     }
+
+    // Generar PDF del Catálogo
+    document.getElementById('btnPrintPDF').onclick = function() {
+      var content = document.getElementById('pdfCatalogContent');
+      content.innerHTML = '';
+
+      products.forEach(function(p) {
+        var item = document.createElement('div');
+        item.style.cssText = 'border-bottom: 1px solid #ccc; padding: 10px 0; display:flex; gap:15px; align-items:center;';
+        item.innerHTML = 
+          '<img src="' + (p.img || 'https://via.placeholder.com/80') + '" style="width:80px; height:80px; object-fit:cover; border-radius:6px;">' +
+          '<div>' +
+            '<h3 style="margin:0;">' + p.name + '</h3>' +
+            '<p style="margin:4px 0; font-weight:bold; color:#2563eb;">$' + p.price.toLocaleString('es-AR') + '</p>' +
+            '<small>Colores: ' + p.colores.join(', ') + ' | Talles: ' + p.talles.join(', ') + '</small>' +
+          '</div>';
+        content.appendChild(item);
+      });
+
+      var template = document.getElementById('pdfExportTemplate');
+      template.style.display = 'block';
+
+      var opt = {
+        margin: 10,
+        filename: 'Catalogo_MAISHAN.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(template).save().then(function() {
+        template.style.display = 'none';
+      });
+    };
 
     document.getElementById('btnGenerateMatrix').onclick = function() {
       var coloresRaw = document.getElementById('prodColores').value;
@@ -319,40 +435,9 @@
       currentImageBase64 = '';
     };
 
-    var adminModal = document.getElementById('adminModal');
-    document.getElementById('btnAdmin').onclick = function() {
-      renderAdminList();
-      adminModal.classList.add('active');
-    };
-    document.getElementById('btnCloseAdmin').onclick = function() { adminModal.classList.remove('active'); };
-
-    function renderAdminList() {
-      var container = document.getElementById('adminStockList');
-      container.innerHTML = '';
-
-      products.forEach(function(p) {
-        var item = document.createElement('div');
-        item.style.cssText = 'border-bottom: 1px solid #e2e8f0; padding: 12px 0; display:flex; justify-content:space-between; align-items:center;';
-        item.innerHTML = 
-          '<div>' +
-            '<strong>' + p.name + '</strong><br>' +
-            '<small style="color:#64748b;">Stock total: ' + getTotalStock(p.stockMatrix) + ' unidades</small>' +
-          '</div>' +
-          '<button class="btn btn-outline" style="color:red; padding:6px 10px; font-size:0.75rem;" onclick="deleteProduct(' + p.id + ')">Eliminar</button>';
-        container.appendChild(item);
-      });
-    }
-
-    window.deleteProduct = function(id) {
-      if (confirm('¿Eliminar esta prenda del catálogo?')) {
-        products = products.filter(function(p) { return p.id !== id; });
-        saveProducts();
-        renderAdminList();
-      }
-    };
-
     document.getElementById('searchInput').oninput = renderCatalog;
     renderCatalog();
+    updateFinances();
   </script>
 </body>
 </html>
