@@ -13,95 +13,172 @@
       --primary: #0f172a;
       --accent: #2563eb;
       --whatsapp: #25d366;
-      --bg: #f8fafc;
+      --bg: #f1f5f9;
       --card-bg: #ffffff;
-      --border: #e2e8f0;
+      --border: #cbd5e1;
       --text-main: #0f172a;
       --text-muted: #64748b;
       --success-bg: #dcfce7;
       --success-text: #166534;
       --danger-bg: #fee2e2;
       --danger-text: #991b1b;
-      --shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-      --radius: 12px;
+      --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+      --radius: 18px;
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
     body { background-color: var(--bg); color: var(--text-main); padding: 16px; max-width: 1200px; margin: 0 auto; }
-    
-    header { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 2px solid var(--border); text-align: center; }
-    @media (min-width: 600px) { header { flex-direction: row; justify-content: space-between; align-items: center; text-align: left; } }
-    
-    .brand-title { font-size: 1.4rem; font-weight: 800; color: var(--primary); text-transform: uppercase; }
-    .brand-subtitle { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
-    
+
+    /* Portada de Marca */
+    .brand-banner-container {
+      width: 100%;
+      height: 180px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+    }
+
+    .brand-banner-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.85;
+    }
+
+    .brand-overlay {
+      position: relative;
+      z-index: 2;
+      padding: 16px;
+      background: rgba(15, 23, 42, 0.4);
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(2px);
+    }
+
+    .brand-title {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+
+    .brand-subtitle {
+      font-size: 0.9rem;
+      font-weight: 600;
+      opacity: 0.9;
+      letter-spacing: 2px;
+      margin-top: 4px;
+    }
+
+    header {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
     .header-btns { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-    .btn { padding: 10px 14px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; font-size: 0.85rem; text-align: center; }
+    .btn { padding: 10px 16px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; font-size: 0.85rem; text-align: center; transition: all 0.2s ease; }
+    .btn:active { transform: scale(0.97); }
     .btn-primary { background-color: var(--accent); color: white; }
     .btn-whatsapp { background-color: var(--whatsapp); color: white; }
     .btn-outline { background: white; border: 1px solid var(--border); color: var(--text-main); }
     .btn-danger { background-color: #ef4444; color: white; }
+    .btn-warning { background-color: #f59e0b; color: white; }
 
     /* Dashboard Financiero */
     .finance-card {
       background: white; border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 16px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;
+      padding: 18px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;
       box-shadow: var(--shadow);
     }
     .finance-item { text-align: center; }
     .finance-item label { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
-    .finance-item val { display: block; font-size: 1.3rem; font-weight: 800; color: var(--primary); margin-top: 4px; }
+    .finance-item val { display: block; font-size: 1.4rem; font-weight: 800; color: var(--primary); margin-top: 4px; }
 
     .controls { margin-bottom: 20px; }
-    .search-input { padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; background: white; width: 100%; outline: none; }
-    
-    .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-    .product-card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; }
-    .product-img { width: 100%; height: 220px; object-fit: cover; background-color: #f1f5f9; }
-    .product-info { padding: 16px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
-    .product-title { font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
-    .product-price { font-size: 1.25rem; font-weight: 800; color: var(--accent); }
-    
-    .variants-summary { background: #f8fafc; padding: 10px; border-radius: 8px; font-size: 0.82rem; color: var(--text-muted); border: 1px solid var(--border); }
+    .search-input { padding: 14px 18px; border: 1px solid var(--border); border-radius: 12px; font-size: 0.95rem; background: white; width: 100%; outline: none; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+
+    /* Catálogo Grid */
+    .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 22px; }
+    .product-card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s ease; }
+    .product-card:hover { transform: translateY(-2px); }
+    .product-img { width: 100%; height: 240px; object-fit: cover; background-color: #f8fafc; }
+    .product-info { padding: 18px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+    .product-title { font-size: 1.15rem; font-weight: 800; color: var(--text-main); }
+    .product-price { font-size: 1.35rem; font-weight: 800; color: var(--accent); }
+
+    .variants-summary { background: #f8fafc; padding: 12px; border-radius: 10px; font-size: 0.82rem; color: var(--text-muted); border: 1px solid #e2e8f0; }
     .color-row { margin-bottom: 8px; }
     .color-row:last-child { margin-bottom: 0; }
     .variant-item { display: inline-flex; align-items: center; gap: 4px; background: white; border: 1px solid var(--border); padding: 4px 8px; border-radius: 6px; margin: 3px 2px; font-weight: 600; }
-    
+
     .stock-btn { width: 22px; height: 22px; border-radius: 4px; border: 1px solid var(--border); background: #f1f5f9; color: #0f172a; font-weight: 800; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
     .stock-badge { align-self: start; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
     .in-stock { background-color: var(--success-bg); color: var(--success-text); }
     .out-stock { background-color: var(--danger-bg); color: var(--danger-text); }
-    
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; padding: 16px; z-index: 100; visibility: hidden; opacity: 0; transition: all 0.2s ease; }
+
+    .card-actions { display: flex; gap: 8px; margin-top: 10px; }
+    .card-actions .btn { padding: 8px 10px; font-size: 0.78rem; }
+
+    /* Modales */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); display: flex; justify-content: center; align-items: center; padding: 16px; z-index: 100; visibility: hidden; opacity: 0; transition: all 0.2s ease; backdrop-filter: blur(3px); }
     .modal-overlay.active { visibility: visible; opacity: 1; }
-    .modal { background: white; padding: 20px; border-radius: var(--radius); width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
-    .modal h2 { margin-bottom: 14px; font-size: 1.1rem; }
+    .modal { background: white; padding: 22px; border-radius: var(--radius); width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); }
+    .modal h2 { margin-bottom: 14px; font-size: 1.15rem; font-weight: 800; }
     .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; }
-    .form-group input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.85rem; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 4px; color: var(--text-main); }
+    .form-group input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.88rem; outline: none; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
-    
+
     .matrix-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
     .matrix-table th, .matrix-table td { padding: 8px; text-align: center; border: 1px solid var(--border); font-size: 0.8rem; }
     .matrix-table th { background: #f1f5f9; font-weight: 700; }
     .matrix-table input { width: 50px; text-align: center; padding: 4px; border: 1px solid var(--border); border-radius: 4px; }
-    .image-preview { width: 100%; height: 140px; border-radius: 8px; object-fit: cover; margin-top: 8px; display: none; border: 1px solid var(--border); }
-    .empty-state { text-align: center; padding: 40px; color: var(--text-muted); grid-column: 1 / -1; }
-    
+    .image-preview { width: 100%; height: 150px; border-radius: 10px; object-fit: cover; margin-top: 8px; display: none; border: 1px solid var(--border); }
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); grid-column: 1 / -1; }
+
+    .sales-list { list-style: none; margin-top: 10px; max-height: 300px; overflow-y: auto; }
+    .sales-item { padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; }
+
     .admin-only { display: none; }
   </style>
 </head>
 <body>
 
-  <header>
-    <div>
+  <!-- Portada / Banner de la Marca -->
+  <div class="brand-banner-container">
+    <img id="bannerImg" class="brand-banner-img" src="https://via.placeholder.com/1200x400/0f172a/ffffff?text=MAISHAN" alt="Portada MAISHAN">
+    <div class="brand-overlay">
       <div class="brand-title">MAISHAN</div>
       <div class="brand-subtitle">INDUMENTARIA & ESTILO</div>
     </div>
+  </div>
+
+  <header>
     <div class="header-btns">
-      <button class="btn btn-whatsapp" id="btnShareCatalog">📲 Compartir Catálogo</button>
-      <button class="btn btn-outline" id="btnPrintPDF">🖨️ PDF Catálogo</button>
-      <button class="btn btn-outline" id="btnToggleAdmin">🔐 Modo Admin</button>
+      <button class="btn btn-whatsapp admin-only" id="btnShareCatalog">📲 Compartir Catálogo</button>
+      <button class="btn btn-outline admin-only" id="btnPrintPDF">🖨️ PDF Catálogo</button>
+      <button class="btn btn-outline admin-only" id="btnViewSalesHistory">📋 Historial Ventas</button>
+      <button class="btn btn-outline admin-only" id="btnChangeBanner">🖼️ Foto Portada</button>
+      <button class="btn btn-outline" id="btnToggleAdmin">🔐 Acceso Admin</button>
       <button class="btn btn-primary admin-only" id="btnAdd">➕ Nuevo Producto</button>
     </div>
   </header>
@@ -109,33 +186,50 @@
   <!-- Panel Financiero (Solo Admin) -->
   <div class="finance-card admin-only" id="financePanel">
     <div class="finance-item">
-      <label>Valor Stock Total</label>
-      <val id="valStockTotal">$0</val>
+      <label>No Vendido (Stock Activo)</label>
+      <val id="valStockTotal">0 u. ($0)</val>
     </div>
     <div class="finance-item">
       <label>Unidades Vendidas</label>
       <val id="valUnitsSold">0 u.</val>
     </div>
     <div class="finance-item">
-      <label>Total Recaudado</label>
+      <label>Total Recaudado (Ventas)</label>
       <val id="valTotalRevenue">$0</val>
     </div>
   </div>
 
-  <div class="controls">
+  <div class="controls admin-only" id="searchContainer">
     <input type="text" id="searchInput" class="search-input" placeholder="Buscar prenda, color o talle...">
   </div>
 
   <main class="catalog-grid" id="catalogGrid"></main>
 
-  <!-- Modal Nuevo Producto -->
+  <!-- Modal Cargar Foto de Portada -->
+  <div class="modal-overlay" id="bannerModal">
+    <div class="modal">
+      <h2>Cargar Foto de Portada de la Marca</h2>
+      <div class="form-group">
+        <label>Seleccionar Imagen de Banner / Logo</label>
+        <input type="file" id="bannerFileInput" accept="image/*">
+      </div>
+      <img id="bannerPreviewImg" class="image-preview" alt="Vista previa portada">
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" id="btnCancelBanner">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btnSaveBanner">Guardar Portada</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Cargar/Editar Producto -->
   <div class="modal-overlay" id="productModal">
     <div class="modal">
-      <h2>Cargar Nuevo Producto</h2>
+      <h2 id="modalTitle">Cargar Nuevo Producto</h2>
       <form id="productForm">
+        <input type="hidden" id="editProductId">
         <div class="form-group">
           <label>Nombre del Producto</label>
-          <input type="text" id="prodName" required placeholder="Ej. Remera Oversize">
+          <input type="text" id="prodName" required placeholder="Ej. Remera Oversize Algodón">
         </div>
         <div class="form-row">
           <div class="form-group">
@@ -157,7 +251,7 @@
           <input type="text" id="prodTalles" required placeholder="Ej. S, M, L">
         </div>
         <button type="button" class="btn btn-outline" id="btnGenerateMatrix" style="width: 100%; margin-top: 8px;">
-          ⚡ Generar Cantidades por Talle
+          ⚡ Generar Tabla de Cantidades
         </button>
         <div id="matrixContainer" style="margin-top: 14px;"></div>
         <div class="modal-actions">
@@ -168,19 +262,39 @@
     </div>
   </div>
 
-  <!-- Plantilla oculta para exportar PDF -->
+  <!-- Modal Historial de Ventas -->
+  <div class="modal-overlay" id="salesModal">
+    <div class="modal">
+      <h2>Registro de Ventas Realizadas</h2>
+      <ul class="sales-list" id="salesListContainer"></ul>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-danger" id="btnClearSales">Borrar Historial</button>
+        <button type="button" class="btn btn-outline" id="btnCloseSales">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Plantilla Oculta para PDF -->
   <div id="pdfExportTemplate" style="display:none; padding:20px; font-family:sans-serif;">
     <h1 style="text-align:center; color:#0f172a;">MAISHAN INDUMENTARIA & ESTILO</h1>
-    <p style="text-align:center; color:#64748b; margin-bottom:20px;">Catálogo Completo de Productos</p>
+    <p style="text-align:center; color:#64748b; margin-bottom:20px;">Catálogo Oficial de Productos</p>
     <div id="pdfCatalogContent"></div>
   </div>
 
   <script>
     var products = JSON.parse(localStorage.getItem('maishan_catalog_products')) || [];
-    var salesHistory = JSON.parse(localStorage.getItem('maishan_sales_history')) || { units: 0, revenue: 0 };
+    var salesRecords = JSON.parse(localStorage.getItem('maishan_sales_records')) || [];
+    var brandBanner = localStorage.getItem('maishan_brand_banner') || '';
     var isAdmin = false;
     var currentImageBase64 = '';
+    var currentBannerBase64 = '';
 
+    // Cargar foto de portada guardada
+    if (brandBanner) {
+      document.getElementById('bannerImg').src = brandBanner;
+    }
+
+    // Previsualización foto de prenda
     document.getElementById('prodFileInput').addEventListener('change', function(e) {
       var file = e.target.files[0];
       if (file) {
@@ -195,9 +309,24 @@
       }
     });
 
+    // Previsualización foto de portada
+    document.getElementById('bannerFileInput').addEventListener('change', function(e) {
+      var file = e.target.files[0];
+      if (file) {
+        var reader = new FileReader();
+        reader.onload = function(evt) {
+          currentBannerBase64 = evt.target.result;
+          var preview = document.getElementById('bannerPreviewImg');
+          preview.src = currentBannerBase64;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
     function saveProducts() {
       localStorage.setItem('maishan_catalog_products', JSON.stringify(products));
-      localStorage.setItem('maishan_sales_history', JSON.stringify(salesHistory));
+      localStorage.setItem('maishan_sales_records', JSON.stringify(salesRecords));
       renderCatalog();
       updateFinances();
     }
@@ -213,14 +342,37 @@
     }
 
     function updateFinances() {
-      var totalStockVal = 0;
+      var totalUnsoldUnits = 0;
+      var totalUnsoldVal = 0;
+
       products.forEach(function(p) {
-        totalStockVal += (getTotalStock(p.stockMatrix) * p.price);
+        var stock = getTotalStock(p.stockMatrix);
+        totalUnsoldUnits += stock;
+        totalUnsoldVal += (stock * p.price);
       });
-      document.getElementById('valStockTotal').innerText = '$' + totalStockVal.toLocaleString('es-AR');
-      document.getElementById('valUnitsSold').innerText = salesHistory.units + ' u.';
-      document.getElementById('valTotalRevenue').innerText = '$' + salesHistory.revenue.toLocaleString('es-AR');
+
+      var totalSoldUnits = salesRecords.length;
+      var totalRevenue = salesRecords.reduce(function(acc, item) { return acc + item.price; }, 0);
+
+      document.getElementById('valStockTotal').innerText = totalUnsoldUnits + ' u. ($' + totalUnsoldVal.toLocaleString('es-AR') + ')';
+      document.getElementById('valUnitsSold').innerText = totalSoldUnits + ' u.';
+      document.getElementById('valTotalRevenue').innerText = '$' + totalRevenue.toLocaleString('es-AR');
     }
+
+    // Guardar foto de portada
+    document.getElementById('btnChangeBanner').onclick = function() {
+      document.getElementById('bannerModal').classList.add('active');
+    };
+    document.getElementById('btnCancelBanner').onclick = function() {
+      document.getElementById('bannerModal').classList.remove('active');
+    };
+    document.getElementById('btnSaveBanner').onclick = function() {
+      if (currentBannerBase64) {
+        localStorage.setItem('maishan_brand_banner', currentBannerBase64);
+        document.getElementById('bannerImg').src = currentBannerBase64;
+        document.getElementById('bannerModal').classList.remove('active');
+      }
+    };
 
     window.updateVariantStock = function(prodId, color, talle, change) {
       var prod = products.find(function(p) { return p.id === prodId; });
@@ -229,21 +381,20 @@
         var updated = current + change;
         if (updated < 0) updated = 0;
 
-        // Si se descuenta stock (venta realizada por el admin)
         if (change === -1 && current > 0) {
-          salesHistory.units += 1;
-          salesHistory.revenue += prod.price;
+          salesRecords.push({
+            id: Date.now(),
+            date: new Date().toLocaleString('es-AR'),
+            product: prod.name,
+            color: color,
+            talle: talle,
+            price: prod.price
+          });
         }
 
         prod.stockMatrix[color][talle] = updated;
         saveProducts();
       }
-    };
-
-    window.orderViaWhatsApp = function(prodName, price) {
-      var msg = 'Hola MAISHAN! Quisiera encargar la prenda: ' + prodName + ' ($' + price.toLocaleString('es-AR') + ')';
-      var url = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(msg);
-      window.open(url, '_blank');
     };
 
     document.getElementById('btnShareCatalog').onclick = function() {
@@ -253,11 +404,11 @@
       window.open(url, '_blank');
     };
 
-    // Alternar Modo Admin con Contraseña
+    // Alternar Modo Admin con Contraseña 2468
     document.getElementById('btnToggleAdmin').onclick = function() {
       if (!isAdmin) {
-        var pass = prompt('Ingresá la contraseña de Administrador:');
-        if (pass === '1234') {
+        var pass = prompt('Ingresá la clave de Administrador:');
+        if (pass === '2468') {
           isAdmin = true;
           document.getElementById('btnToggleAdmin').innerText = '🔓 Salir Admin';
           document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = 'block'; });
@@ -267,7 +418,7 @@
         }
       } else {
         isAdmin = false;
-        document.getElementById('btnToggleAdmin').innerText = '🔐 Modo Admin';
+        document.getElementById('btnToggleAdmin').innerText = '🔐 Acceso Admin';
         document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = 'none'; });
         renderCatalog();
       }
@@ -275,21 +426,26 @@
 
     function renderCatalog() {
       var grid = document.getElementById('catalogGrid');
-      var search = document.getElementById('searchInput').value.toLowerCase();
       grid.innerHTML = '';
 
+      if (!isAdmin) {
+        grid.innerHTML = '<div class="empty-state"><h2>MAISHAN INDUMENTARIA & ESTILO</h2><p style="margin-top:8px;">Bienvenido/a. El catálogo privado está actualmente cerrado para vista pública.</p></div>';
+        return;
+      }
+
+      var search = document.getElementById('searchInput').value.toLowerCase();
       var filtered = products.filter(function(p) {
         return p.name.toLowerCase().indexOf(search) !== -1;
       });
 
       if (filtered.length === 0) {
-        grid.innerHTML = '<div class="empty-state"><p>No hay prendas disponibles en el catálogo.</p></div>';
+        grid.innerHTML = '<div class="empty-state"><p>No hay prendas cargadas en el catálogo.</p></div>';
         return;
       }
 
       filtered.forEach(function(p) {
         var totalStock = getTotalStock(p.stockMatrix);
-        var defaultImg = 'https://via.placeholder.com/300x220?text=MAISHAN';
+        var defaultImg = 'https://via.placeholder.com/300x230?text=MAISHAN';
         
         var variantsHTML = '';
         p.colores.forEach(function(c) {
@@ -316,16 +472,91 @@
             '<div class="variants-summary">' + variantsHTML + '</div>' +
             '<div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">' +
               '<div class="stock-badge ' + (totalStock > 0 ? 'in-stock' : 'out-stock') + '">' +
-                (totalStock > 0 ? 'Disponible' : 'Sin Stock') +
+                (totalStock > 0 ? 'No vendido: ' + totalStock + ' u.' : 'Sin Stock') +
               '</div>' +
-              '<button class="btn btn-whatsapp" style="padding:6px 10px; font-size:0.75rem;" onclick="orderViaWhatsApp(\'' + p.name + '\', ' + p.price + ')">💬 Pedir por WhatsApp</button>' +
             '</div>' +
+            (isAdmin ? 
+              '<div class="card-actions">' +
+                '<button class="btn btn-warning" style="flex:1;" onclick="editProduct(' + p.id + ')">✏️ Editar</button>' +
+                '<button class="btn btn-danger" style="flex:1;" onclick="deleteProduct(' + p.id + ')">🗑️ Borrar</button>' +
+              '</div>' : ''
+            ) +
           '</div>';
         grid.appendChild(card);
       });
     }
 
-    // Generar PDF del Catálogo
+    document.getElementById('btnViewSalesHistory').onclick = function() {
+      var container = document.getElementById('salesListContainer');
+      container.innerHTML = '';
+
+      if (salesRecords.length === 0) {
+        container.innerHTML = '<li class="sales-item">No hay ventas registradas aún.</li>';
+      } else {
+        salesRecords.slice().reverse().forEach(function(s) {
+          var li = document.createElement('li');
+          li.className = 'sales-item';
+          li.innerHTML = '<div><strong>' + s.product + '</strong> (' + s.color + ' / ' + s.talle + ')<br><small style="color:#64748b;">' + s.date + '</small></div>' +
+            '<strong style="color:#2563eb;">$' + s.price.toLocaleString('es-AR') + '</strong>';
+          container.appendChild(li);
+        });
+      }
+
+      document.getElementById('salesModal').classList.add('active');
+    };
+
+    document.getElementById('btnCloseSales').onclick = function() {
+      document.getElementById('salesModal').classList.remove('active');
+    };
+
+    document.getElementById('btnClearSales').onclick = function() {
+      if (confirm('¿Vaciar todo el historial de ventas?')) {
+        salesRecords = [];
+        saveProducts();
+        document.getElementById('salesModal').classList.remove('active');
+      }
+    };
+
+    window.editProduct = function(id) {
+      var prod = products.find(function(p) { return p.id === id; });
+      if (!prod) return;
+
+      document.getElementById('editProductId').value = prod.id;
+      document.getElementById('prodName').value = prod.name;
+      document.getElementById('prodPrice').value = prod.price;
+      document.getElementById('prodColores').value = prod.colores.join(', ');
+      document.getElementById('prodTalles').value = prod.talles.join(', ');
+      document.getElementById('modalTitle').innerText = 'Editar Producto';
+
+      if (prod.img) {
+        currentImageBase64 = prod.img;
+        var preview = document.getElementById('previewImg');
+        preview.src = currentImageBase64;
+        preview.style.display = 'block';
+      }
+
+      document.getElementById('btnGenerateMatrix').click();
+
+      setTimeout(function() {
+        document.querySelectorAll('.matrix-input').forEach(function(input) {
+          var color = input.getAttribute('data-color');
+          var talle = input.getAttribute('data-talle');
+          if (prod.stockMatrix[color] && prod.stockMatrix[color][talle] !== undefined) {
+            input.value = prod.stockMatrix[color][talle];
+          }
+        });
+      }, 100);
+
+      document.getElementById('productModal').classList.add('active');
+    };
+
+    window.deleteProduct = function(id) {
+      if (confirm('¿Eliminar esta prenda del catálogo?')) {
+        products = products.filter(function(p) { return p.id !== id; });
+        saveProducts();
+      }
+    };
+
     document.getElementById('btnPrintPDF').onclick = function() {
       var content = document.getElementById('pdfCatalogContent');
       content.innerHTML = '';
@@ -389,19 +620,25 @@
     };
 
     var productModal = document.getElementById('productModal');
-    document.getElementById('btnAdd').onclick = function() { productModal.classList.add('active'); };
-    document.getElementById('btnCancelProduct').onclick = function() {
-      productModal.classList.remove('active');
+    document.getElementById('btnAdd').onclick = function() {
       document.getElementById('productForm').reset();
+      document.getElementById('editProductId').value = '';
+      document.getElementById('modalTitle').innerText = 'Cargar Nuevo Producto';
       document.getElementById('matrixContainer').innerHTML = '';
       document.getElementById('previewImg').style.display = 'none';
       document.getElementById('btnSaveProduct').style.display = 'none';
       currentImageBase64 = '';
+      productModal.classList.add('active');
+    };
+
+    document.getElementById('btnCancelProduct').onclick = function() {
+      productModal.classList.remove('active');
     };
 
     document.getElementById('productForm').onsubmit = function(e) {
       e.preventDefault();
       
+      var editId = document.getElementById('editProductId').value;
       var colores = document.getElementById('prodColores').value.split(',').map(function(c) { return c.trim(); }).filter(Boolean);
       var talles = document.getElementById('prodTalles').value.split(',').map(function(t) { return t.trim(); }).filter(Boolean);
       
@@ -415,24 +652,31 @@
         stockMatrix[color][talle] = cant;
       });
 
-      var newProd = {
-        id: Date.now(),
-        name: document.getElementById('prodName').value,
-        price: parseFloat(document.getElementById('prodPrice').value),
-        img: currentImageBase64,
-        colores: colores,
-        talles: talles,
-        stockMatrix: stockMatrix
-      };
+      if (editId) {
+        var prod = products.find(function(p) { return p.id == editId; });
+        if (prod) {
+          prod.name = document.getElementById('prodName').value;
+          prod.price = parseFloat(document.getElementById('prodPrice').value);
+          if (currentImageBase64) prod.img = currentImageBase64;
+          prod.colores = colores;
+          prod.talles = talles;
+          prod.stockMatrix = stockMatrix;
+        }
+      } else {
+        var newProd = {
+          id: Date.now(),
+          name: document.getElementById('prodName').value,
+          price: parseFloat(document.getElementById('prodPrice').value),
+          img: currentImageBase64,
+          colores: colores,
+          talles: talles,
+          stockMatrix: stockMatrix
+        };
+        products.push(newProd);
+      }
 
-      products.push(newProd);
       saveProducts();
       productModal.classList.remove('active');
-      document.getElementById('productForm').reset();
-      document.getElementById('matrixContainer').innerHTML = '';
-      document.getElementById('previewImg').style.display = 'none';
-      document.getElementById('btnSaveProduct').style.display = 'none';
-      currentImageBase64 = '';
     };
 
     document.getElementById('searchInput').oninput = renderCatalog;
