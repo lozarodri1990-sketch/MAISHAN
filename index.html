@@ -430,6 +430,8 @@
       if (localData) {
         try { products = JSON.parse(localData); } catch(e){}
       }
+      renderProducts();
+      updateDashboard();
       
       loadDataFromCloud();
     });
@@ -498,8 +500,11 @@
         if (res.ok) {
           const data = await res.json();
           if (data.record && Array.isArray(data.record.products)) {
-            products = data.record.products;
-            localStorage.setItem('maishan_local_products', JSON.stringify(products));
+            // Solo sobreescribir si la nube trae datos válidos
+            if (data.record.products.length >= products.length) {
+              products = data.record.products;
+              localStorage.setItem('maishan_local_products', JSON.stringify(products));
+            }
           }
           renderProducts();
           updateDashboard();
@@ -530,10 +535,10 @@
         if (res.ok) {
           updateSyncStatus('success', 'Guardado en Nube');
         } else {
-          updateSyncStatus('success', 'Guardado en Local');
+          updateSyncStatus('success', 'Guardado Localmente');
         }
       } catch (e) {
-        updateSyncStatus('success', 'Guardado en Local');
+        updateSyncStatus('success', 'Guardado Localmente');
       }
     }
 
@@ -581,6 +586,7 @@
       tbody.appendChild(tr);
     }
 
+    // Compresión ultra liviana para acelerar guardado
     function processImage(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -592,7 +598,7 @@
           const canvas = document.createElement('canvas');
           let width = img.width;
           let height = img.height;
-          const maxDim = 500;
+          const maxDim = 350; // Resolución liviana para guardar al instante
 
           if (width > height) {
             if (width > maxDim) { height *= maxDim / width; width = maxDim; }
@@ -605,7 +611,7 @@
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
 
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.55);
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.40);
 
           const output = document.getElementById('img-preview');
           output.src = compressedDataUrl;
@@ -695,18 +701,6 @@
 
               ${p.nota ? `<p class="text-warning small mb-2"><i class="fas fa-sticky-note me-1"></i>${p.nota}</p>` : ''}
 
-              <!-- Controles Rápidos de Entrada y Salida (Modo Admin) -->
-              ${isAdmin ? `
-                <div class="d-flex gap-1 mb-2">
-                  <button class="btn btn-sm btn-outline-success flex-fill" onclick="quickStockChange('${p.id}', 1)">
-                    <i class="fas fa-plus me-1"></i> Entrada
-                  </button>
-                  <button class="btn btn-sm btn-outline-danger flex-fill" onclick="quickStockChange('${p.id}', -1)">
-                    <i class="fas fa-minus me-1"></i> Vendido
-                  </button>
-                </div>
-              ` : ''}
-
               <div class="mt-auto">
                 <button class="btn btn-success btn-sm w-100 mb-2" onclick="sendWhatsAppQuick('${p.id}')">
                   <i class="fab fa-whatsapp me-1"></i> Responder Stock (WhatsApp)
@@ -725,18 +719,6 @@
         `;
         container.appendChild(col);
       });
-    }
-
-    function quickStockChange(id, delta) {
-      const p = products.find(prod => prod.id === id);
-      if (!p) return;
-
-      if (delta < 0 && p.estado === 'LIBRE') {
-        p.estado = 'VENDIDO';
-      } else if (delta > 0 && p.estado === 'VENDIDO') {
-        p.estado = 'LIBRE';
-      }
-      saveDataToCloud();
     }
 
     function sendWhatsAppQuick(id) {
