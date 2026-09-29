@@ -22,18 +22,13 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       color: #333;
     }
-    .navbar-brand {
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      color: var(--accent-color) !important;
-    }
     .header-banner {
       background-color: var(--primary-color);
       color: #fff;
       padding: 2rem 1rem;
       text-align: center;
       border-bottom: 4px solid var(--accent-color);
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
     }
     .card-product {
       border: none;
@@ -57,24 +52,23 @@
     
     .social-links a {
       color: #fff;
-      font-size: 1.2rem;
-      margin: 0 8px;
+      font-size: 1.3rem;
+      margin: 0 10px;
       text-decoration: none;
       transition: color 0.2s;
     }
     .social-links a:hover {
       color: var(--accent-color);
     }
-    .btn-custom {
-      background-color: var(--primary-color);
-      color: #fff;
-    }
-    .btn-custom:hover {
-      background-color: #333;
-      color: var(--accent-color);
+
+    .size-counter-btn {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      line-height: 1;
+      font-weight: bold;
     }
     
-    /* PDF Export Styles */
     #pdf-template {
       display: none;
       background: #fff;
@@ -86,21 +80,32 @@
       padding-bottom: 15px;
       margin-bottom: 20px;
     }
+    .upload-box {
+      border: 2px dashed #0d6efd;
+      background-color: #f0f7ff;
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Top Sync Bar -->
-  <div class="bg-dark text-white py-1 px-3 d-flex justify-content-between align-items-center text-small" style="font-size: 0.85rem;">
+  <!-- Top Sync & Admin Bar -->
+  <div class="bg-dark text-white py-1 px-3 d-flex justify-content-between align-items-center" style="font-size: 0.85rem;">
     <div>
       <span id="sync-status" class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Sincronizado</span>
       <span class="ms-2 d-none d-sm-inline text-muted">JSONBin.io Sync Activo</span>
     </div>
     <div>
       <button class="btn btn-sm btn-outline-light py-0" onclick="loadDataFromCloud()">
-        <i class="fas fa-sync-alt me-1"></i> Actualizar Ahora
+        <i class="fas fa-sync-alt me-1"></i> Actualizar
       </button>
-      <button id="btn-toggle-admin" class="btn btn-sm btn-outline-warning py-0 ms-2" onclick="toggleAdminModal()">
+      <button id="btn-config" class="btn btn-sm btn-outline-info py-0 ms-1 d-none" onclick="openConfigModal()">
+        <i class="fas fa-cog"></i> Config
+      </button>
+      <button id="btn-toggle-admin" class="btn btn-sm btn-outline-warning py-0 ms-1" onclick="toggleAdmin()">
         <i class="fas fa-lock me-1"></i> Modo Admin
       </button>
     </div>
@@ -111,12 +116,11 @@
     <h1 class="display-5 fw-bold text-uppercase">MAISHAN</h1>
     <p class="lead mb-2" style="letter-spacing: 2px; font-size: 1rem;">INDUMENTARIA & ESTILO</p>
     
-    <!-- Redes Sociales y Contacto -->
-    <div class="social-links mt-3">
-      <a href="https://wa.me/5491100000000" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-      <a href="https://instagram.com" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
-      <a href="https://facebook.com" target="_blank" title="Facebook"><i class="fab fa-facebook"></i></a>
-      <a href="https://tiktok.com" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
+    <!-- Redes Sociales Oficiales -->
+    <div class="social-links mt-3" id="header-social-links">
+      <a href="https://www.instagram.com/maishan_ind.official?stkn=dGV3bXpxamVqOGF0" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+      <a href="Https://www.tiktok.com/@maishan_ind.official?_r=1&_t=ZS-9A7sjf2g7Gf" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
+      <span id="ws-header-link"></span>
     </div>
   </div>
 
@@ -177,11 +181,10 @@
       <div class="col-6 col-md-3">
         <select id="filter-ocasion" class="form-select" onchange="renderProducts()">
           <option value="TODAS">Todas las Ocasiones</option>
-          <option value="Casual / Urbano">Casual / Urbano</option>
-          <option value="Noche / Fiestas">Noche / Fiestas</option>
-          <option value="Primavera / Verano">Primavera / Verano</option>
-          <option value="Otoño / Invierno">Otoño / Invierno</option>
-          <option value="Promos / Liquida">Promos / Liquida</option>
+          <option value="Urbano / Casual">Urbano / Casual</option>
+          <option value="Noche / Salidas">Noche / Salidas</option>
+          <option value="Temporada">Temporada</option>
+          <option value="Promos / Liquidación">Promos / Liquidación</option>
         </select>
       </div>
       <div class="col-12 col-md-2 text-end">
@@ -192,9 +195,7 @@
     </div>
 
     <!-- Contenedor Principal de Productos -->
-    <div id="products-container" class="row g-4">
-      <!-- Se carga dinámicamente -->
-    </div>
+    <div id="products-container" class="row g-4"></div>
 
   </div>
 
@@ -214,6 +215,24 @@
     </div>
   </div>
 
+  <!-- Modal Configuración WhatsApp -->
+  <div class="modal fade" id="modalConfig" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-white">
+          <h5 class="modal-title">Ajustes de WhatsApp</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <label class="form-label">Número de WhatsApp Comercial:</label>
+          <input type="text" id="config-ws-num" class="form-control mb-2" placeholder="Ej: 5491112345678">
+          <small class="text-muted d-block mb-3">Incluir código de país sin + ni espacios.</small>
+          <button class="btn btn-primary w-100" onclick="saveConfig()">Guardar WhatsApp</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal Agregar / Editar Producto -->
   <div class="modal fade" id="modalProduct" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -228,12 +247,38 @@
             
             <div class="row g-3">
               <div class="col-md-6">
-                <label class="form-label">Nombre del Artículo *</label>
+                <label class="form-label fw-bold">Nombre del Artículo *</label>
                 <input type="text" id="prod-nombre" class="form-control" required placeholder="Ej. Remera Oversize Noir">
               </div>
+              
+              <!-- Carga de Foto desde Galería o Cámara -->
               <div class="col-md-6">
-                <label class="form-label">Link de la Imagen (URL / ImgBB) *</label>
-                <input type="url" id="prod-img" class="form-control" required placeholder="https://i.ibb.co/...">
+                <label class="form-label fw-bold">Foto de la Prenda *</label>
+                <div class="upload-box mb-2" onclick="document.getElementById('prod-img-file').click()">
+                  <i class="fas fa-camera fa-2x text-primary mb-1"></i>
+                  <div class="small text-dark fw-bold">Toca para abrir la Galería o Cámara</div>
+                  <small class="text-muted" style="font-size: 0.75rem;">Se optimiza automáticamente</small>
+                </div>
+                <input type="file" id="prod-img-file" class="d-none" accept="image/*" onchange="processImage(event)">
+                
+                <!-- URL Opcional de Respaldo -->
+                <div class="accordion" id="accordionUrl">
+                  <div class="accordion-item border-0">
+                    <h2 class="accordion-header">
+                      <button class="accordion-button collapsed p-1 text-muted small bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUrl">
+                        ¿Preferís usar un link/URL directo?
+                      </button>
+                    </h2>
+                    <div id="collapseUrl" class="accordion-collapse collapse">
+                      <input type="text" id="prod-img-url" class="form-control form-control-sm mt-1" placeholder="https://ejemplo.com/foto.jpg" oninput="setUrlImage(this.value)">
+                    </div>
+                  </div>
+                </div>
+
+                <input type="hidden" id="prod-img-base64">
+                <div class="mt-2 text-center">
+                  <img id="img-preview" src="" style="max-height: 120px; display: none;" class="img-thumbnail rounded shadow-sm">
+                </div>
               </div>
 
               <div class="col-md-4">
@@ -245,18 +290,17 @@
                 </select>
               </div>
               <div class="col-md-4">
-                <label class="form-label">Ocasión / Colección</label>
+                <label class="form-label">Ocasión / Categoría</label>
                 <select id="prod-ocasion" class="form-select">
-                  <option value="Casual / Urbano">Casual / Urbano</option>
-                  <option value="Noche / Fiestas">Noche / Fiestas</option>
-                  <option value="Primavera / Verano">Primavera / Verano</option>
-                  <option value="Otoño / Invierno">Otoño / Invierno</option>
-                  <option value="Promos / Liquida">Promos / Liquida</option>
+                  <option value="Urbano / Casual">Urbano / Casual</option>
+                  <option value="Noche / Salidas">Noche / Salidas</option>
+                  <option value="Temporada">Temporada</option>
+                  <option value="Promos / Liquidación">Promos / Liquidación</option>
                 </select>
               </div>
               <div class="col-md-4">
-                <label class="form-label">Cliente / Nota (Si está Reservado)</label>
-                <input type="text" id="prod-nota" class="form-control" placeholder="Ej. Reservado a María p/ Viernes">
+                <label class="form-label">Cliente / Nota (Reservas)</label>
+                <input type="text" id="prod-nota" class="form-control" placeholder="Ej: Señado por María p/ Viernes">
               </div>
 
               <!-- Finanzas -->
@@ -266,34 +310,74 @@
               </div>
               <div class="col-md-4">
                 <label class="form-label">Costos Agregados ($)</label>
-                <input type="number" id="prod-costo-agregado" class="form-control" value="0" placeholder="Bolsas, envíos, etc.">
+                <input type="number" id="prod-costo-agregado" class="form-control" value="0" placeholder="Bolsas, envíos...">
               </div>
               <div class="col-md-4">
                 <label class="form-label">Precio Venta Público ($) *</label>
                 <input type="number" id="prod-precio-venta" class="form-control" required value="0">
               </div>
 
-              <!-- Desglose por Talles y Colores -->
+              <!-- Carga Simplificada de Stock por Talles (S a XXL) -->
               <div class="col-12">
                 <hr>
-                <h6>Desglose de Stock por Talles y Colores</h6>
-                <div class="row g-2">
-                  <div class="col-6 col-md-3">
-                    <label class="form-label text-small">Talle S (Cant. / Colores)</label>
-                    <input type="text" id="prod-talle-s" class="form-control" placeholder="Ej: 2 (Negro, Blanco)">
+                <h6>Stock por Talles y Colores</h6>
+                <div class="row g-2 text-center">
+                  
+                  <!-- Talle S -->
+                  <div class="col-12 col-md-4 bg-light p-2 rounded">
+                    <strong>Talle S</strong>
+                    <div class="d-flex align-items-center justify-content-center my-1 gap-2">
+                      <button type="button" class="btn btn-sm btn-outline-danger size-counter-btn" onclick="changeQty('s', -1)">-</button>
+                      <span id="qty-s" class="fw-bold">0</span>
+                      <button type="button" class="btn btn-sm btn-outline-success size-counter-btn" onclick="changeQty('s', 1)">+</button>
+                    </div>
+                    <input type="text" id="color-s" class="form-control form-control-sm" placeholder="Colores (ej: Negro, Blanco)">
                   </div>
-                  <div class="col-6 col-md-3">
-                    <label class="form-label text-small">Talle M (Cant. / Colores)</label>
-                    <input type="text" id="prod-talle-m" class="form-control" placeholder="Ej: 3 (Gris)">
+
+                  <!-- Talle M -->
+                  <div class="col-12 col-md-4 bg-light p-2 rounded">
+                    <strong>Talle M</strong>
+                    <div class="d-flex align-items-center justify-content-center my-1 gap-2">
+                      <button type="button" class="btn btn-sm btn-outline-danger size-counter-btn" onclick="changeQty('m', -1)">-</button>
+                      <span id="qty-m" class="fw-bold">0</span>
+                      <button type="button" class="btn btn-sm btn-outline-success size-counter-btn" onclick="changeQty('m', 1)">+</button>
+                    </div>
+                    <input type="text" id="color-m" class="form-control form-control-sm" placeholder="Colores (ej: Gris)">
                   </div>
-                  <div class="col-6 col-md-3">
-                    <label class="form-label text-small">Talle L (Cant. / Colores)</label>
-                    <input type="text" id="prod-talle-l" class="form-control" placeholder="Agotado">
+
+                  <!-- Talle L -->
+                  <div class="col-12 col-md-4 bg-light p-2 rounded">
+                    <strong>Talle L</strong>
+                    <div class="d-flex align-items-center justify-content-center my-1 gap-2">
+                      <button type="button" class="btn btn-sm btn-outline-danger size-counter-btn" onclick="changeQty('l', -1)">-</button>
+                      <span id="qty-l" class="fw-bold">0</span>
+                      <button type="button" class="btn btn-sm btn-outline-success size-counter-btn" onclick="changeQty('l', 1)">+</button>
+                    </div>
+                    <input type="text" id="color-l" class="form-control form-control-sm" placeholder="Colores">
                   </div>
-                  <div class="col-6 col-md-3">
-                    <label class="form-label text-small">Talle XL (Cant. / Colores)</label>
-                    <input type="text" id="prod-talle-xl" class="form-control" placeholder="Agotado">
+
+                  <!-- Talle XL -->
+                  <div class="col-12 col-md-6 bg-light p-2 rounded mt-2">
+                    <strong>Talle XL</strong>
+                    <div class="d-flex align-items-center justify-content-center my-1 gap-2">
+                      <button type="button" class="btn btn-sm btn-outline-danger size-counter-btn" onclick="changeQty('xl', -1)">-</button>
+                      <span id="qty-xl" class="fw-bold">0</span>
+                      <button type="button" class="btn btn-sm btn-outline-success size-counter-btn" onclick="changeQty('xl', 1)">+</button>
+                    </div>
+                    <input type="text" id="color-xl" class="form-control form-control-sm" placeholder="Colores">
                   </div>
+
+                  <!-- Talle XXL -->
+                  <div class="col-12 col-md-6 bg-light p-2 rounded mt-2">
+                    <strong>Talle XXL</strong>
+                    <div class="d-flex align-items-center justify-content-center my-1 gap-2">
+                      <button type="button" class="btn btn-sm btn-outline-danger size-counter-btn" onclick="changeQty('xxl', -1)">-</button>
+                      <span id="qty-xxl" class="fw-bold">0</span>
+                      <button type="button" class="btn btn-sm btn-outline-success size-counter-btn" onclick="changeQty('xxl', 1)">+</button>
+                    </div>
+                    <input type="text" id="color-xxl" class="form-control form-control-sm" placeholder="Colores">
+                  </div>
+
                 </div>
               </div>
 
@@ -314,6 +398,9 @@
       <h1 style="margin: 0; font-size: 28px;">MAISHAN</h1>
       <p style="margin: 0; letter-spacing: 2px;">INDUMENTARIA & ESTILO</p>
       <p style="margin-top: 5px; font-size: 12px;">CATÁLOGO DE STOCK DISPONIBLE</p>
+      <p style="margin-top: 2px; font-size: 10px; color: #555;">
+        Instagram: @maishan_ind.official | TikTok: @maishan_ind.official
+      </p>
     </div>
     <div id="pdf-content-list" class="row"></div>
   </div>
@@ -322,20 +409,85 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    // Configuración JSONBin.io & Credenciales
     const BIN_ID = '6abafce0ffd5d16053398fa8';
     const MASTER_KEY = '$2a$10$oA.Tk9hUqu63fQrGnMNL6enO8IElcJyI.QHFGCBTxcaxOz0iyu3vG';
     const ADMIN_PASS = '2468';
 
     let products = [];
     let isAdmin = false;
+    let configWhatsApp = '';
 
-    // Inicialización
+    // Contadores temporales para modal
+    let currentQty = { s: 0, m: 0, l: 0, xl: 0, xxl: 0 };
+
     document.addEventListener('DOMContentLoaded', () => {
+      // Recordar sesión admin guardada
+      if (localStorage.getItem('maishan_admin') === 'true') {
+        enableAdminMode();
+      }
+      
+      // Cargar WhatsApp guardado
+      configWhatsApp = localStorage.getItem('maishan_ws') || '';
+      renderWhatsAppHeader();
+
       loadDataFromCloud();
     });
 
-    // Cargar Datos desde JSONBin.io
+    function enableAdminMode() {
+      isAdmin = true;
+      document.getElementById('admin-dashboard').classList.remove('d-none');
+      document.getElementById('btn-config').classList.remove('d-none');
+      document.getElementById('btn-toggle-admin').innerHTML = `<i class="fas fa-unlock text-warning me-1"></i> Salir Admin`;
+      localStorage.setItem('maishan_admin', 'true');
+      renderProducts();
+      updateDashboard();
+    }
+
+    function toggleAdmin() {
+      if (isAdmin) {
+        isAdmin = false;
+        document.getElementById('admin-dashboard').classList.add('d-none');
+        document.getElementById('btn-config').classList.add('d-none');
+        document.getElementById('btn-toggle-admin').innerHTML = `<i class="fas fa-lock me-1"></i> Modo Admin`;
+        localStorage.removeItem('maishan_admin');
+        renderProducts();
+      } else {
+        new bootstrap.Modal(document.getElementById('modalAdminLogin')).show();
+      }
+    }
+
+    function loginAdmin() {
+      const pass = document.getElementById('admin-pass-input').value;
+      if (pass === ADMIN_PASS) {
+        enableAdminMode();
+        bootstrap.Modal.getInstance(document.getElementById('modalAdminLogin')).hide();
+        document.getElementById('admin-pass-input').value = '';
+      } else {
+        alert('Contraseña incorrecta');
+      }
+    }
+
+    function openConfigModal() {
+      document.getElementById('config-ws-num').value = configWhatsApp;
+      new bootstrap.Modal(document.getElementById('modalConfig')).show();
+    }
+
+    function saveConfig() {
+      configWhatsApp = document.getElementById('config-ws-num').value.trim();
+      localStorage.setItem('maishan_ws', configWhatsApp);
+      renderWhatsAppHeader();
+      bootstrap.Modal.getInstance(document.getElementById('modalConfig')).hide();
+    }
+
+    function renderWhatsAppHeader() {
+      const span = document.getElementById('ws-header-link');
+      if (configWhatsApp) {
+        span.innerHTML = `<a href="https://wa.me/${configWhatsApp}" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>`;
+      } else {
+        span.innerHTML = '';
+      }
+    }
+
     async function loadDataFromCloud() {
       updateSyncStatus('loading', 'Sincronizando...');
       try {
@@ -352,12 +504,10 @@
           updateSyncStatus('error', 'Error al cargar');
         }
       } catch (e) {
-        console.error(e);
         updateSyncStatus('error', 'Error de conexión');
       }
     }
 
-    // Guardar Datos en JSONBin.io
     async function saveDataToCloud() {
       updateSyncStatus('loading', 'Guardando...');
       try {
@@ -377,7 +527,6 @@
           updateSyncStatus('error', 'Error al guardar');
         }
       } catch (e) {
-        console.error(e);
         updateSyncStatus('error', 'Error de conexión');
       }
     }
@@ -396,34 +545,66 @@
       }
     }
 
-    // Modal Admin Login
-    function toggleAdminModal() {
-      if (isAdmin) {
-        isAdmin = false;
-        document.getElementById('admin-dashboard').classList.add('d-none');
-        document.getElementById('btn-toggle-admin').innerHTML = `<i class="fas fa-lock me-1"></i> Modo Admin`;
-        renderProducts();
-      } else {
-        new bootstrap.Modal(document.getElementById('modalAdminLogin')).show();
+    // Manejo de cantidades con botones + / -
+    function changeQty(size, val) {
+      currentQty[size] = Math.max(0, currentQty[size] + val);
+      document.getElementById(`qty-${size}`).innerText = currentQty[size];
+    }
+
+    // Compresión y Procesamiento Automático de Imagen de Galería
+    function processImage(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          const maxDim = 800; // Máxima resolución optimizada
+
+          if (width > height) {
+            if (width > maxDim) {
+              height *= maxDim / width;
+              width = maxDim;
+            }
+          } else {
+            if (height > maxDim) {
+              width *= maxDim / height;
+              height = maxDim;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Calidad 75% compresión JPEG
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75);
+
+          const output = document.getElementById('img-preview');
+          output.src = compressedDataUrl;
+          output.style.display = 'inline-block';
+          document.getElementById('prod-img-base64').value = compressedDataUrl;
+          document.getElementById('prod-img-url').value = '';
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function setUrlImage(url) {
+      if (url.trim()) {
+        document.getElementById('prod-img-base64').value = url.trim();
+        const output = document.getElementById('img-preview');
+        output.src = url.trim();
+        output.style.display = 'inline-block';
       }
     }
 
-    function loginAdmin() {
-      const pass = document.getElementById('admin-pass-input').value;
-      if (pass === ADMIN_PASS) {
-        isAdmin = true;
-        document.getElementById('admin-dashboard').classList.remove('d-none');
-        document.getElementById('btn-toggle-admin').innerHTML = `<i class="fas fa-unlock text-warning me-1"></i> Salir Admin`;
-        bootstrap.Modal.getInstance(document.getElementById('modalAdminLogin')).hide();
-        document.getElementById('admin-pass-input').value = '';
-        renderProducts();
-        updateDashboard();
-      } else {
-        alert('Contraseña incorrecta');
-      }
-    }
-
-    // Renderizar Productos
     function renderProducts() {
       const container = document.getElementById('products-container');
       const search = document.getElementById('search-input').value.toLowerCase();
@@ -442,7 +623,7 @@
       if (filtered.length === 0) {
         container.innerHTML = `<div class="col-12 text-center text-muted py-5">
           <i class="fas fa-box-open fa-3x mb-3"></i>
-          <p>No se encontraron prendas con los filtros seleccionados.</p>
+          <p>No hay artículos para mostrar.</p>
         </div>`;
         return;
       }
@@ -457,23 +638,24 @@
         col.innerHTML = `
           <div class="card card-product h-100">
             <div class="position-relative">
-              <img src="${p.img}" class="product-img" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/300x300?text=MAISHAN'">
+              <img src="${p.img || 'https://via.placeholder.com/300x300?text=MAISHAN'}" class="product-img" alt="${p.nombre}">
               <span class="position-absolute top-0 end-0 badge ${badgeClass} m-2">${p.estado}</span>
             </div>
             <div class="card-body d-flex flex-column">
               <h5 class="card-title fs-6 fw-bold mb-1">${p.nombre}</h5>
-              <p class="text-muted small mb-2"><i class="fas fa-tag me-1"></i>${p.ocasion || 'General'}</p>
+              <p class="text-muted small mb-2"><i class="fas fa-tag me-1"></i>${p.ocasion || 'Urbano / Casual'}</p>
               
               <div class="mb-2">
                 <strong class="fs-5 text-dark">$${Number(p.precioVenta).toLocaleString()}</strong>
               </div>
 
-              <!-- Desglose Talles -->
+              <!-- Stock por Talles -->
               <div class="bg-light p-2 rounded mb-3 small">
-                <div><strong>S:</strong> ${p.talleS || 'Agotado'}</div>
-                <div><strong>M:</strong> ${p.talleM || 'Agotado'}</div>
-                <div><strong>L:</strong> ${p.talleL || 'Agotado'}</div>
-                <div><strong>XL:</strong> ${p.talleXL || 'Agotado'}</div>
+                <div><strong>S:</strong> ${p.stockS ? p.stockS.qty + ' dispon. ' + (p.stockS.color ? '('+p.stockS.color+')' : '') : 'Agotado'}</div>
+                <div><strong>M:</strong> ${p.stockM ? p.stockM.qty + ' dispon. ' + (p.stockM.color ? '('+p.stockM.color+')' : '') : 'Agotado'}</div>
+                <div><strong>L:</strong> ${p.stockL ? p.stockL.qty + ' dispon. ' + (p.stockL.color ? '('+p.stockL.color+')' : '') : 'Agotado'}</div>
+                <div><strong>XL:</strong> ${p.stockXL ? p.stockXL.qty + ' dispon. ' + (p.stockXL.color ? '('+p.stockXL.color+')' : '') : 'Agotado'}</div>
+                <div><strong>XXL:</strong> ${p.stockXXL ? p.stockXXL.qty + ' dispon. ' + (p.stockXXL.color ? '('+p.stockXXL.color+')' : '') : 'Agotado'}</div>
               </div>
 
               ${p.nota ? `<p class="text-warning small mb-2"><i class="fas fa-sticky-note me-1"></i>${p.nota}</p>` : ''}
@@ -498,7 +680,6 @@
       });
     }
 
-    // Respuesta Rápida WhatsApp en 1 Clic
     function sendWhatsAppQuick(id) {
       const p = products.find(prod => prod.id === id);
       if (!p) return;
@@ -507,34 +688,28 @@
       msg += `📌 *Producto:* ${p.nombre}\n`;
       msg += `💰 *Precio:* $${Number(p.precioVenta).toLocaleString()}\n\n`;
       msg += `📦 *STOCK Y DISPONIBILIDAD HOY:*\n`;
-      msg += `▫️ *Talle S:* ${p.talleS ? '✅ ' + p.talleS : '❌ Agotado'}\n`;
-      msg += `▫️ *Talle M:* ${p.talleM ? '✅ ' + p.talleM : '❌ Agotado'}\n`;
-      msg += `▫️ *Talle L:* ${p.talleL ? '✅ ' + p.talleL : '❌ Agotado'}\n`;
-      msg += `▫️ *Talle XL:* ${p.talleXL ? '✅ ' + p.talleXL : '❌ Agotado'}\n\n`;
-      msg += `🖼️ *Ver Foto:* ${p.img}\n`;
-      msg += `⚡ *¡Quedan pocas unidades! Indicame talle y color para reservártelo ahora.*`;
+      msg += `▫️ *Talle S:* ${p.stockS && p.stockS.qty > 0 ? '✅ ' + p.stockS.qty + ' dispon. (' + p.stockS.color + ')' : '❌ Agotado'}\n`;
+      msg += `▫️ *Talle M:* ${p.stockM && p.stockM.qty > 0 ? '✅ ' + p.stockM.qty + ' dispon. (' + p.stockM.color + ')' : '❌ Agotado'}\n`;
+      msg += `▫️ *Talle L:* ${p.stockL && p.stockL.qty > 0 ? '✅ ' + p.stockL.qty + ' dispon. (' + p.stockL.color + ')' : '❌ Agotado'}\n`;
+      msg += `▫️ *Talle XL:* ${p.stockXL && p.stockXL.qty > 0 ? '✅ ' + p.stockXL.qty + ' dispon. (' + p.stockXL.color + ')' : '❌ Agotado'}\n`;
+      msg += `▫️ *Talle XXL:* ${p.stockXXL && p.stockXXL.qty > 0 ? '✅ ' + p.stockXXL.qty + ' dispon. (' + p.stockXXL.color + ')' : '❌ Agotado'}\n\n`;
+      msg += `⚡ *¡Quedan pocas unidades! Indicame talle y color para reservártelo.*`;
 
       const encoded = encodeURIComponent(msg);
-      window.open(`https://wa.me/?text=${encoded}`, '_blank');
+      window.open(`https://wa.me/${configWhatsApp}?text=${encoded}`, '_blank');
     }
 
-    // Dashboard Financiero
     function updateDashboard() {
-      let capital = 0;
-      let reservas = 0;
-      let ventas = 0;
-      let ganancia = 0;
+      let capital = 0, reservas = 0, ventas = 0, ganancia = 0;
 
       products.forEach(p => {
         const costoTotal = (Number(p.costoDirecto) || 0) + (Number(p.costoAgregado) || 0);
         const precioVenta = Number(p.precioVenta) || 0;
         const margen = precioVenta - costoTotal;
 
-        if (p.estado === 'LIBRE') {
-          capital += costoTotal;
-        } else if (p.estado === 'RESERVADO') {
-          reservas += costoTotal;
-        } else if (p.estado === 'VENDIDO') {
+        if (p.estado === 'LIBRE') capital += costoTotal;
+        else if (p.estado === 'RESERVADO') reservas += costoTotal;
+        else if (p.estado === 'VENDIDO') {
           ventas += precioVenta;
           ganancia += margen;
         }
@@ -546,10 +721,19 @@
       document.getElementById('dash-ganancia').innerText = `$${ganancia.toLocaleString()}`;
     }
 
-    // Modal Crear / Editar
     function openProductModal() {
       document.getElementById('product-form').reset();
       document.getElementById('prod-id').value = '';
+      document.getElementById('prod-img-base64').value = '';
+      document.getElementById('prod-img-url').value = '';
+      document.getElementById('img-preview').style.display = 'none';
+      
+      currentQty = { s: 0, m: 0, l: 0, xl: 0, xxl: 0 };
+      ['s','m','l','xl','xxl'].forEach(size => {
+        document.getElementById(`qty-${size}`).innerText = '0';
+        document.getElementById(`color-${size}`).value = '';
+      });
+
       document.getElementById('modalProductTitle').innerText = 'Nuevo Artículo - MAISHAN';
       new bootstrap.Modal(document.getElementById('modalProduct')).show();
     }
@@ -560,17 +744,34 @@
 
       document.getElementById('prod-id').value = p.id;
       document.getElementById('prod-nombre').value = p.nombre;
-      document.getElementById('prod-img').value = p.img;
+      document.getElementById('prod-img-base64').value = p.img || '';
+      document.getElementById('prod-img-url').value = '';
+      
+      if (p.img) {
+        document.getElementById('img-preview').src = p.img;
+        document.getElementById('img-preview').style.display = 'inline-block';
+      }
+
       document.getElementById('prod-estado').value = p.estado;
-      document.getElementById('prod-ocasion').value = p.ocasion || 'Casual / Urbano';
+      document.getElementById('prod-ocasion').value = p.ocasion || 'Urbano / Casual';
       document.getElementById('prod-nota').value = p.nota || '';
       document.getElementById('prod-costo-directo').value = p.costoDirecto || 0;
       document.getElementById('prod-costo-agregado').value = p.costoAgregado || 0;
       document.getElementById('prod-precio-venta').value = p.precioVenta || 0;
-      document.getElementById('prod-talle-s').value = p.talleS || '';
-      document.getElementById('prod-talle-m').value = p.talleM || '';
-      document.getElementById('prod-talle-l').value = p.talleL || '';
-      document.getElementById('prod-talle-xl').value = p.talleXL || '';
+
+      currentQty = {
+        s: p.stockS ? p.stockS.qty : 0,
+        m: p.stockM ? p.stockM.qty : 0,
+        l: p.stockL ? p.stockL.qty : 0,
+        xl: p.stockXL ? p.stockXL.qty : 0,
+        xxl: p.stockXXL ? p.stockXXL.qty : 0
+      };
+
+      ['s','m','l','xl','xxl'].forEach(size => {
+        document.getElementById(`qty-${size}`).innerText = currentQty[size];
+        const key = 'stock' + size.toUpperCase();
+        document.getElementById(`color-${size}`).value = p[key] ? p[key].color : '';
+      });
 
       document.getElementById('modalProductTitle').innerText = 'Editar Artículo - MAISHAN';
       new bootstrap.Modal(document.getElementById('modalProduct')).show();
@@ -579,10 +780,10 @@
     function saveProduct() {
       const id = document.getElementById('prod-id').value;
       const nombre = document.getElementById('prod-nombre').value;
-      const img = document.getElementById('prod-img').value;
+      const img = document.getElementById('prod-img-base64').value;
 
-      if (!nombre || !img) {
-        alert('Por favor complete el nombre y la URL de la imagen.');
+      if (!nombre) {
+        alert('Por favor complete el nombre de la prenda.');
         return;
       }
 
@@ -596,10 +797,11 @@
         costoDirecto: Number(document.getElementById('prod-costo-directo').value) || 0,
         costoAgregado: Number(document.getElementById('prod-costo-agregado').value) || 0,
         precioVenta: Number(document.getElementById('prod-precio-venta').value) || 0,
-        talleS: document.getElementById('prod-talle-s').value,
-        talleM: document.getElementById('prod-talle-m').value,
-        talleL: document.getElementById('prod-talle-l').value,
-        talleXL: document.getElementById('prod-talle-xl').value
+        stockS: { qty: currentQty.s, color: document.getElementById('color-s').value },
+        stockM: { qty: currentQty.m, color: document.getElementById('color-m').value },
+        stockL: { qty: currentQty.l, color: document.getElementById('color-l').value },
+        stockXL: { qty: currentQty.xl, color: document.getElementById('color-xl').value },
+        stockXXL: { qty: currentQty.xxl, color: document.getElementById('color-xxl').value }
       };
 
       if (id) {
@@ -620,7 +822,6 @@
       }
     }
 
-    // Exportar Catálogo PDF (Solo Disponibles)
     function exportPDF() {
       const pdfList = document.getElementById('pdf-content-list');
       pdfList.innerHTML = '';
@@ -628,7 +829,7 @@
       const disponibles = products.filter(p => p.estado === 'LIBRE');
 
       if (disponibles.length === 0) {
-        alert('No hay productos en estado Libre / Disponible para exportar.');
+        alert('No hay productos disponibles para exportar.');
         return;
       }
 
@@ -643,12 +844,14 @@
         div.style.border = '1px solid #ddd';
 
         div.innerHTML = `
-          <img src="${p.img}" style="width: 100%; height: 180px; object-fit: cover; margin-bottom: 8px;">
+          <img src="${p.img || 'https://via.placeholder.com/300x300'}" style="width: 100%; height: 180px; object-fit: cover; margin-bottom: 8px;">
           <h4 style="margin: 0 0 5px 0; font-size: 14px;">${p.nombre}</h4>
           <p style="margin: 0 0 5px 0; font-weight: bold; font-size: 16px;">$${Number(p.precioVenta).toLocaleString()}</p>
           <div style="font-size: 10px; color: #555;">
-            <div>S: ${p.talleS || '-'} | M: ${p.talleM || '-'}</div>
-            <div>L: ${p.talleL || '-'} | XL: ${p.talleXL || '-'}</div>
+            <div>S: ${p.stockS && p.stockS.qty > 0 ? p.stockS.qty + ' (' + p.stockS.color + ')' : '-'}</div>
+            <div>M: ${p.stockM && p.stockM.qty > 0 ? p.stockM.qty + ' (' + p.stockM.color + ')' : '-'}</div>
+            <div>L: ${p.stockL && p.stockL.qty > 0 ? p.stockL.qty + ' (' + p.stockL.color + ')' : '-'}</div>
+            <div>XL: ${p.stockXL && p.stockXL.qty > 0 ? p.stockXL.qty + ' (' + p.stockXL.color + ')' : '-'}</div>
           </div>
         `;
         pdfList.appendChild(div);
@@ -671,4 +874,4 @@
     }
   </script>
 </body>
-</html>
+                        </html>
