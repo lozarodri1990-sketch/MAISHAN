@@ -1,877 +1,967 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MAISHAN - Indumentaria & Estilo | Panel & Catálogo</title>
-  <!-- Bootstrap 5 CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- html2pdf.js library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-  <style>
-    :root {
-      --primary-color: #1a1a1a;
-      --accent-color: #d4af37;
-      --bg-light: #f8f9fa;
-    }
-    body {
-      background-color: var(--bg-light);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #333;
-    }
-    .header-banner {
-      background-color: var(--primary-color);
-      color: #fff;
-      padding: 2rem 1rem;
-      text-align: center;
-      border-bottom: 4px solid var(--accent-color);
-      margin-bottom: 1.5rem;
-    }
-    .card-product {
-      border: none;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      transition: transform 0.2s;
-      background: #fff;
-      overflow: hidden;
-    }
-    .card-product:hover {
-      transform: translateY(-4px);
-    }
-    .product-img {
-      height: 250px;
-      object-fit: cover;
-      width: 100%;
-    }
-    .badge-status-libre { background-color: #198754; }
-    .badge-status-reservado { background-color: #ffc107; color: #000; }
-    .badge-status-vendido { background-color: #dc3545; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAISHAN — Sistema de Control & Inventario Pro</title>
+    <!-- FontAwesome para Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    .social-links a {
-      color: #fff;
-      font-size: 1.3rem;
-      margin: 0 10px;
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    .social-links a:hover {
-      color: var(--accent-color);
-    }
+    <style>
+        :root {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #d97706;
+            --accent-hover: #b45309;
+            --green: #22c55e;
+            --green-bg: rgba(34, 197, 94, 0.15);
+            --amber: #f59e0b;
+            --amber-bg: rgba(245, 158, 11, 0.15);
+            --red: #ef4444;
+            --red-bg: rgba(239, 68, 68, 0.15);
+            --border: #334155;
+            --radius: 10px;
+        }
 
-    .size-counter-btn {
-      width: 32px;
-      height: 32px;
-      padding: 0;
-      line-height: 1;
-      font-weight: bold;
-    }
-    
-    #pdf-template {
-      display: none;
-      background: #fff;
-      padding: 20px;
-    }
-    .pdf-header {
-      text-align: center;
-      border-bottom: 2px solid #000;
-      padding-bottom: 15px;
-      margin-bottom: 20px;
-    }
-    .upload-box {
-      border: 2px dashed #0d6efd;
-      background-color: #f0f7ff;
-      border-radius: 8px;
-      padding: 15px;
-      text-align: center;
-      cursor: pointer;
-    }
-  </style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding-bottom: 60px;
+        }
+
+        /* HEADER & BRANDING */
+        header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border-bottom: 2px solid var(--accent);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .brand-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-title span {
+            color: var(--accent);
+        }
+
+        .social-badges {
+            display: flex;
+            gap: 10px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .social-badges span {
+            background: var(--bg-card);
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+
+        /* CONTAINER & NAV TABS */
+        .container {
+            max-width: 1300px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px 18px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background-color: var(--accent);
+            color: #ffffff;
+        }
+
+        .tab-btn:hover:not(.active) {
+            background-color: var(--bg-card);
+            color: var(--text-main);
+        }
+
+        /* TAB SECTIONS */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* CONTROL BAR (Busqueda y Filtros) */
+        .control-bar {
+            background-color: var(--bg-card);
+            padding: 15px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 10px 10px 38px;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-main);
+            outline: none;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-filter {
+            background-color: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .btn-filter.active {
+            border-color: var(--accent);
+            background-color: rgba(217, 119, 6, 0.2);
+            color: #fbbf24;
+        }
+
+        .btn-action {
+            background-color: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-action:hover {
+            background-color: var(--accent-hover);
+        }
+
+        /* TABLA DE INVENTARIO ALTA DENSIDAD */
+        .table-responsive {
+            overflow-x: auto;
+            background-color: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .inventory-table th {
+            background-color: #0f172a;
+            padding: 12px 15px;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .inventory-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .inventory-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .product-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .product-img {
+            width: 45px;
+            height: 45px;
+            border-radius: 6px;
+            object-fit: cover;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border);
+        }
+
+        /* BADGES Y CONTADORES DE STOCK */
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        .badge-green { background: var(--green-bg); color: var(--green); border: 1px solid var(--green); }
+        .badge-amber { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber); }
+        .badge-red { background: var(--red-bg); color: var(--red); border: 1px solid var(--red); }
+
+        .variant-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background-color: var(--bg-input);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin: 2px;
+            border: 1px solid var(--border);
+        }
+
+        .stock-control-btn {
+            background-color: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            width: 26px;
+            height: 26px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stock-control-btn:hover {
+            background-color: var(--accent);
+            color: #fff;
+        }
+
+        /* DASHBOARD FINANCIERO */
+        .finance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .finance-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px;
+            position: relative;
+        }
+
+        .finance-card h4 {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .finance-card .amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .finance-card .subtext {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* MODAL */
+        .modal-backdrop {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 15px;
+        }
+
+        .modal-backdrop.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            max-width: 650px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 12px;
+        }
+
+        .form-group.full {
+            grid-column: span 2;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group select {
+            padding: 9px;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-main);
+            outline: none;
+        }
+
+        /* ESTILOS PARA IMPRESIÓN (PDF / REPORTE) */
+        @media print {
+            body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+            }
+            header, .nav-tabs, .control-bar, .btn-action, .stock-control-btn, .no-print {
+                display: none !important;
+            }
+            .container {
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .finance-card, .table-responsive {
+                border: 1px solid #ccc !important;
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                box-shadow: none !important;
+            }
+            .inventory-table th {
+                background-color: #f1f5f9 !important;
+                color: #000000 !important;
+            }
+            .inventory-table td {
+                color: #000000 !important;
+            }
+            .print-header {
+                display: block !important;
+                text-align: center;
+                margin-bottom: 20px;
+                border-bottom: 2px solid #000;
+                padding-bottom: 10px;
+            }
+        }
+
+        .print-header {
+            display: none;
+        }
+    </style>
 </head>
 <body>
 
-  <!-- Top Sync & Admin Bar -->
-  <div class="bg-dark text-white py-1 px-3 d-flex justify-content-between align-items-center" style="font-size: 0.85rem;">
-    <div>
-      <span id="sync-status" class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Sincronizado</span>
-      <span class="ms-2 d-none d-sm-inline text-muted">JSONBin.io Sync Activo</span>
-    </div>
-    <div>
-      <button class="btn btn-sm btn-outline-light py-0" onclick="loadDataFromCloud()">
-        <i class="fas fa-sync-alt me-1"></i> Actualizar
-      </button>
-      <button id="btn-config" class="btn btn-sm btn-outline-info py-0 ms-1 d-none" onclick="openConfigModal()">
-        <i class="fas fa-cog"></i> Config
-      </button>
-      <button id="btn-toggle-admin" class="btn btn-sm btn-outline-warning py-0 ms-1" onclick="toggleAdmin()">
-        <i class="fas fa-lock me-1"></i> Modo Admin
-      </button>
-    </div>
-  </div>
-
-  <!-- Header Banner / Logo -->
-  <div class="header-banner">
-    <h1 class="display-5 fw-bold text-uppercase">MAISHAN</h1>
-    <p class="lead mb-2" style="letter-spacing: 2px; font-size: 1rem;">INDUMENTARIA & ESTILO</p>
-    
-    <!-- Redes Sociales Oficiales -->
-    <div class="social-links mt-3" id="header-social-links">
-      <a href="https://www.instagram.com/maishan_ind.official?stkn=dGV3bXpxamVqOGF0" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
-      <a href="Https://www.tiktok.com/@maishan_ind.official?_r=1&_t=ZS-9A7sjf2g7Gf" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
-      <span id="ws-header-link"></span>
-    </div>
-  </div>
-
-  <div class="container mb-5">
-    
-    <!-- Dashboard Financiero Privado (Solo Admin) -->
-    <div id="admin-dashboard" class="card bg-dark text-white mb-4 d-none">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5 class="card-title text-warning mb-0"><i class="fas fa-chart-line me-2"></i> Panel de Control Financiero (Privado)</h5>
-          <button class="btn btn-sm btn-success" onclick="openProductModal()"><i class="fas fa-plus me-1"></i> Nuevo Artículo</button>
+    <!-- CABECERA PRINCIPAL -->
+    <header>
+        <div class="brand-title">
+            <i class="fa-solid fa-shirt"></i> MAISHAN <span>INDUMENTARIA & ESTILO</span>
         </div>
-        <div class="row text-center g-3">
-          <div class="col-6 col-md-3">
-            <div class="p-2 border border-secondary rounded">
-              <small class="text-muted d-block">Capital en Stock (Libre)</small>
-              <strong class="fs-5 text-info" id="dash-capital">$0</strong>
-            </div>
-          </div>
-          <div class="col-6 col-md-3">
-            <div class="p-2 border border-secondary rounded">
-              <small class="text-muted d-block">Capital Retenido (Reservas)</small>
-              <strong class="fs-5 text-warning" id="dash-reservas">$0</strong>
-            </div>
-          </div>
-          <div class="col-6 col-md-3">
-            <div class="p-2 border border-secondary rounded">
-              <small class="text-muted d-block">Ventas Realizadas</small>
-              <strong class="fs-5 text-success" id="dash-ventas">$0</strong>
-            </div>
-          </div>
-          <div class="col-6 col-md-3">
-            <div class="p-2 border border-secondary rounded">
-              <small class="text-muted d-block">Ganancia Neta Estimada</small>
-              <strong class="fs-5 text-warning" id="dash-ganancia">$0</strong>
-            </div>
-          </div>
+        <div class="social-badges">
+            <span><i class="fa-brands fa-instagram"></i> @maishan_ind.official</span>
+            <span><i class="fa-brands fa-tiktok"></i> @maishan_ind.official</span>
         </div>
-      </div>
-    </div>
+    </header>
 
-    <!-- Controles de Filtros y Búsqueda -->
-    <div class="row g-2 mb-4 align-items-center">
-      <div class="col-12 col-md-4">
-        <div class="input-group">
-          <span class="input-group-text"><i class="fas fa-search"></i></span>
-          <input type="text" id="search-input" class="form-control" placeholder="Buscar prenda..." oninput="renderProducts()">
+    <div class="container">
+        <!-- CABECERA EXCLUSIVA PARA IMPRESIÓN -->
+        <div class="print-header">
+            <h2>MAISHAN INDUMENTARIA & ESTILO</h2>
+            <p>Reporte de Inventario y Finanzas Oficial | Generado: <span id="print-date"></span></p>
+            <p>Instagram / TikTok: @maishan_ind.official</p>
         </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <select id="filter-estado" class="form-select" onchange="renderProducts()">
-          <option value="TODOS">Todos los Estados</option>
-          <option value="LIBRE" selected>🟢 Solo Libres / Disponibles</option>
-          <option value="RESERVADO">🟡 Solo Reservados</option>
-          <option value="VENDIDO">🔴 Solo Vendidos</option>
-        </select>
-      </div>
-      <div class="col-6 col-md-3">
-        <select id="filter-ocasion" class="form-select" onchange="renderProducts()">
-          <option value="TODAS">Todas las Ocasiones</option>
-          <option value="Urbano / Casual">Urbano / Casual</option>
-          <option value="Noche / Salidas">Noche / Salidas</option>
-          <option value="Temporada">Temporada</option>
-          <option value="Promos / Liquidación">Promos / Liquidación</option>
-        </select>
-      </div>
-      <div class="col-12 col-md-2 text-end">
-        <button class="btn btn-outline-dark w-100" onclick="exportPDF()">
-          <i class="fas fa-file-pdf text-danger me-1"></i> Exportar PDF
-        </button>
-      </div>
-    </div>
 
-    <!-- Contenedor Principal de Productos -->
-    <div id="products-container" class="row g-4"></div>
+        <!-- PESTAÑAS NAVEGABLES -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('inventory-tab')">
+                <i class="fa-solid fa-boxes-stacked"></i> Control de Stock Diario
+            </button>
+            <button class="tab-btn" onclick="switchTab('finance-tab')">
+                <i class="fa-solid fa-chart-line"></i> Dashboard Financiero
+            </button>
+            <button class="tab-btn" onclick="switchTab('whatsapp-tab')">
+                <i class="fa-brands fa-whatsapp"></i> Generador para Redes
+            </button>
+        </div>
 
-  </div>
-
-  <!-- Modal Admin Login -->
-  <div class="modal fade" id="modalAdminLogin" tabindex="-1">
-    <div class="modal-dialog modal-sm">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Acceso Administrador</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <input type="password" id="admin-pass-input" class="form-control mb-3" placeholder="Contraseña de Admin">
-          <button class="btn btn-dark w-100" onclick="loginAdmin()">Ingresar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Configuración WhatsApp -->
-  <div class="modal fade" id="modalConfig" tabindex="-1">
-    <div class="modal-dialog modal-sm">
-      <div class="modal-content">
-        <div class="modal-header bg-dark text-white">
-          <h5 class="modal-title">Ajustes de WhatsApp</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <label class="form-label">Número de WhatsApp Comercial:</label>
-          <input type="text" id="config-ws-num" class="form-control mb-2" placeholder="Ej: 5491112345678">
-          <small class="text-muted d-block mb-3">Incluir código de país sin + ni espacios.</small>
-          <button class="btn btn-primary w-100" onclick="saveConfig()">Guardar WhatsApp</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Agregar / Editar Producto -->
-  <div class="modal fade" id="modalProduct" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header bg-dark text-white">
-          <h5 class="modal-title" id="modalProductTitle">Nuevo Artículo - MAISHAN</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <form id="product-form">
-            <input type="hidden" id="prod-id">
-            
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label class="form-label fw-bold">Nombre del Artículo *</label>
-                <input type="text" id="prod-nombre" class="form-control" required placeholder="Ej. Remera Oversize Noir">
-              </div>
-              
-              <!-- Carga de Foto desde Galería o Cámara -->
-              <div class="col-md-6">
-                <label class="form-label fw-bold">Foto de la Prenda *</label>
-                <div class="upload-box mb-2" onclick="document.getElementById('prod-img-file').click()">
-                  <i class="fas fa-camera fa-2x text-primary mb-1"></i>
-                  <div class="small text-dark fw-bold">Toca para abrir la Galería o Cámara</div>
-                  <small class="text-muted" style="font-size: 0.75rem;">Se optimiza automáticamente</small>
+        <!-- PESTAÑA 1: CONTROL DE STOCK DIARIO -->
+        <div id="inventory-tab" class="tab-content active">
+            <div class="control-bar">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="search-input" placeholder="Buscar por artículo, talle, color o código..." oninput="renderInventory()">
                 </div>
-                <input type="file" id="prod-img-file" class="d-none" accept="image/*" onchange="processImage(event)">
-                
-                <!-- URL Opcional de Respaldo -->
-                <div class="accordion" id="accordionUrl">
-                  <div class="accordion-item border-0">
-                    <h2 class="accordion-header">
-                      <button class="accordion-button collapsed p-1 text-muted small bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUrl">
-                        ¿Preferís usar un link/URL directo?
-                      </button>
-                    </h2>
-                    <div id="collapseUrl" class="accordion-collapse collapse">
-                      <input type="text" id="prod-img-url" class="form-control form-control-sm mt-1" placeholder="https://ejemplo.com/foto.jpg" oninput="setUrlImage(this.value)">
-                    </div>
-                  </div>
+                <div class="filter-group">
+                    <button class="btn-filter active" onclick="setFilter('all', this)">Todos</button>
+                    <button class="btn-filter" onclick="setFilter('stock', this)">🟢 En Stock</button>
+                    <button class="btn-filter" onclick="setFilter('low', this)">🟡 Bajo Stock</button>
+                    <button class="btn-filter" onclick="setFilter('out', this)">🔴 Agotado</button>
                 </div>
-
-                <input type="hidden" id="prod-img-base64">
-                <div class="mt-2 text-center">
-                  <img id="img-preview" src="" style="max-height: 120px; display: none;" class="img-thumbnail rounded shadow-sm">
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <label class="form-label">Estado de Stock *</label>
-                <select id="prod-estado" class="form-select">
-                  <option value="LIBRE">🟢 Libre / Disponible</option>
-                  <option value="RESERVADO">🟡 Reservado</option>
-                  <option value="VENDIDO">🔴 Vendido</option>
-                </select>
-              </div>
-              <div class="col-md-4">
-                <label class="form-label">Ocasión / Categoría</label>
-                <select id="prod-ocasion" class="form-select">
-                  <option value="Urbano / Casual">Urbano / Casual</option>
-                  <option value="Noche / Salidas">Noche / Salidas</option>
-                  <option value="Temporada">Temporada</option>
-                  <option value="Promos / Liquidación">Promos / Liquidación</option>
-                </select>
-              </div>
-              <div class="col-md-4">
-                <label class="form-label">Cliente / Nota (Reservas)</label>
-                <input type="text" id="prod-nota" class="form-control" placeholder="Ej: Señado por María p/ Viernes">
-              </div>
-
-              <!-- Finanzas -->
-              <div class="col-md-4">
-                <label class="form-label">Costo Directo ($) *</label>
-                <input type="number" id="prod-costo-directo" class="form-control" required value="0">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label">Costos Agregados ($)</label>
-                <input type="number" id="prod-costo-agregado" class="form-control" value="0" placeholder="Bolsas, envíos...">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label">Precio Venta Público ($) *</label>
-                <input type="number" id="prod-precio-venta" class="form-control" required value="0">
-              </div>
-
-              <!-- Carga Simplificada de Stock por Talles (S a XXL) -->
-              <div class="col-12">
-                <hr>
-                <h6>Stock por Talles y Colores</h6>
-                <div class="row g-2 text-center">
-                  
-                  <!-- Talle S -->
-                  <div class="col-12 col-md-4 bg-light p-2 rounded">
-                    <strong>Talle S</strong>
-                    <div class="d-flex align-items-center justify-content-center my-1 gap-2">
-                      <button type="button" class="btn btn-sm btn-outline-danger size-counter-btn" onclick="changeQty('s', -1)">-</button>
-                      <span id="qty-s" class="fw-bold">0</span>
-                      <button type="button" class="btn btn-sm btn-outline-success size-counter-btn" onclick="changeQty('s', 1)">+</button>
-                    </div>
-                    <input type="text" id="color-s" class="form-control form-control-sm" placeholder="Colores (ej: Negro, Blanco)">
-                  </div>
-
-                  <!-- Talle M -->
-                  <div class="col-12 col-md-4 bg-light p-2 rounded">
-                    <strong>Talle M</strong>
-                    <div class="d-flex align-items-center justify-content-center my-1 gap-2">
-                      <button type="button" class="btn btn-sm btn-outline-danger size-counter-btn" onclick="changeQty('m', -1)">-</button>
-                      <span id="qty-m" class="fw-bold">0</span>
-                      <button type="button" class="btn btn-sm btn-outline-success size-counter-btn" onclick="changeQty('m', 1)">+</button>
-                    </div>
-                    <input type="text" id="color-m" class="form-control form-control-sm" placeholder="Colores (ej: Gris)">
-                  </div>
-
-                  <!-- Talle L -->
-                  <div class="col-12 col-md-4 bg-light p-2 rounded">
-                    <strong>Talle L</strong>
-                    <div class="d-flex align-items-center justify-content-center my-1 gap-2">
-                      <button type="button" class="btn btn-sm btn-outline-danger size-counter-btn" onclick="changeQty('l', -1)">-</button>
-                      <span id="qty-l" class="fw-bold">0</span>
-                      <button type="button" class="btn btn-sm btn-outline-success size-counter-btn" onclick="changeQty('l', 1)">+</button>
-                    </div>
-                    <input type="text" id="color-l" class="form-control form-control-sm" placeholder="Colores">
-                  </div>
-
-                  <!-- Talle XL -->
-                  <div class="col-12 col-md-6 bg-light p-2 rounded mt-2">
-                    <strong>Talle XL</strong>
-                    <div class="d-flex align-items-center justify-content-center my-1 gap-2">
-                      <button type="button" class="btn btn-sm btn-outline-danger size-counter-btn" onclick="changeQty('xl', -1)">-</button>
-                      <span id="qty-xl" class="fw-bold">0</span>
-                      <button type="button" class="btn btn-sm btn-outline-success size-counter-btn" onclick="changeQty('xl', 1)">+</button>
-                    </div>
-                    <input type="text" id="color-xl" class="form-control form-control-sm" placeholder="Colores">
-                  </div>
-
-                  <!-- Talle XXL -->
-                  <div class="col-12 col-md-6 bg-light p-2 rounded mt-2">
-                    <strong>Talle XXL</strong>
-                    <div class="d-flex align-items-center justify-content-center my-1 gap-2">
-                      <button type="button" class="btn btn-sm btn-outline-danger size-counter-btn" onclick="changeQty('xxl', -1)">-</button>
-                      <span id="qty-xxl" class="fw-bold">0</span>
-                      <button type="button" class="btn btn-sm btn-outline-success size-counter-btn" onclick="changeQty('xxl', 1)">+</button>
-                    </div>
-                    <input type="text" id="color-xxl" class="form-control form-control-sm" placeholder="Colores">
-                  </div>
-
-                </div>
-              </div>
-
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-primary" onclick="saveProduct()">Guardar Cambios</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Template Oculto para Exportar en PDF -->
-  <div id="pdf-template">
-    <div class="pdf-header">
-      <h1 style="margin: 0; font-size: 28px;">MAISHAN</h1>
-      <p style="margin: 0; letter-spacing: 2px;">INDUMENTARIA & ESTILO</p>
-      <p style="margin-top: 5px; font-size: 12px;">CATÁLOGO DE STOCK DISPONIBLE</p>
-      <p style="margin-top: 2px; font-size: 10px; color: #555;">
-        Instagram: @maishan_ind.official | TikTok: @maishan_ind.official
-      </p>
-    </div>
-    <div id="pdf-content-list" class="row"></div>
-  </div>
-
-  <!-- Bootstrap JS & App Script -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-  <script>
-    const BIN_ID = '6abafce0ffd5d16053398fa8';
-    const MASTER_KEY = '$2a$10$oA.Tk9hUqu63fQrGnMNL6enO8IElcJyI.QHFGCBTxcaxOz0iyu3vG';
-    const ADMIN_PASS = '2468';
-
-    let products = [];
-    let isAdmin = false;
-    let configWhatsApp = '';
-
-    // Contadores temporales para modal
-    let currentQty = { s: 0, m: 0, l: 0, xl: 0, xxl: 0 };
-
-    document.addEventListener('DOMContentLoaded', () => {
-      // Recordar sesión admin guardada
-      if (localStorage.getItem('maishan_admin') === 'true') {
-        enableAdminMode();
-      }
-      
-      // Cargar WhatsApp guardado
-      configWhatsApp = localStorage.getItem('maishan_ws') || '';
-      renderWhatsAppHeader();
-
-      loadDataFromCloud();
-    });
-
-    function enableAdminMode() {
-      isAdmin = true;
-      document.getElementById('admin-dashboard').classList.remove('d-none');
-      document.getElementById('btn-config').classList.remove('d-none');
-      document.getElementById('btn-toggle-admin').innerHTML = `<i class="fas fa-unlock text-warning me-1"></i> Salir Admin`;
-      localStorage.setItem('maishan_admin', 'true');
-      renderProducts();
-      updateDashboard();
-    }
-
-    function toggleAdmin() {
-      if (isAdmin) {
-        isAdmin = false;
-        document.getElementById('admin-dashboard').classList.add('d-none');
-        document.getElementById('btn-config').classList.add('d-none');
-        document.getElementById('btn-toggle-admin').innerHTML = `<i class="fas fa-lock me-1"></i> Modo Admin`;
-        localStorage.removeItem('maishan_admin');
-        renderProducts();
-      } else {
-        new bootstrap.Modal(document.getElementById('modalAdminLogin')).show();
-      }
-    }
-
-    function loginAdmin() {
-      const pass = document.getElementById('admin-pass-input').value;
-      if (pass === ADMIN_PASS) {
-        enableAdminMode();
-        bootstrap.Modal.getInstance(document.getElementById('modalAdminLogin')).hide();
-        document.getElementById('admin-pass-input').value = '';
-      } else {
-        alert('Contraseña incorrecta');
-      }
-    }
-
-    function openConfigModal() {
-      document.getElementById('config-ws-num').value = configWhatsApp;
-      new bootstrap.Modal(document.getElementById('modalConfig')).show();
-    }
-
-    function saveConfig() {
-      configWhatsApp = document.getElementById('config-ws-num').value.trim();
-      localStorage.setItem('maishan_ws', configWhatsApp);
-      renderWhatsAppHeader();
-      bootstrap.Modal.getInstance(document.getElementById('modalConfig')).hide();
-    }
-
-    function renderWhatsAppHeader() {
-      const span = document.getElementById('ws-header-link');
-      if (configWhatsApp) {
-        span.innerHTML = `<a href="https://wa.me/${configWhatsApp}" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>`;
-      } else {
-        span.innerHTML = '';
-      }
-    }
-
-    async function loadDataFromCloud() {
-      updateSyncStatus('loading', 'Sincronizando...');
-      try {
-        const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-          headers: { 'X-Master-Key': MASTER_KEY }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          products = data.record.products || [];
-          renderProducts();
-          updateDashboard();
-          updateSyncStatus('success', 'Sincronizado');
-        } else {
-          updateSyncStatus('error', 'Error al cargar');
-        }
-      } catch (e) {
-        updateSyncStatus('error', 'Error de conexión');
-      }
-    }
-
-    async function saveDataToCloud() {
-      updateSyncStatus('loading', 'Guardando...');
-      try {
-        const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Master-Key': MASTER_KEY
-          },
-          body: JSON.stringify({ products })
-        });
-        if (res.ok) {
-          updateSyncStatus('success', 'Sincronizado');
-          renderProducts();
-          updateDashboard();
-        } else {
-          updateSyncStatus('error', 'Error al guardar');
-        }
-      } catch (e) {
-        updateSyncStatus('error', 'Error de conexión');
-      }
-    }
-
-    function updateSyncStatus(type, message) {
-      const el = document.getElementById('sync-status');
-      if (type === 'loading') {
-        el.className = 'badge bg-warning text-dark';
-        el.innerHTML = `<i class="fas fa-spinner fa-spin me-1"></i> ${message}`;
-      } else if (type === 'success') {
-        el.className = 'badge bg-success';
-        el.innerHTML = `<i class="fas fa-check-circle me-1"></i> ${message}`;
-      } else {
-        el.className = 'badge bg-danger';
-        el.innerHTML = `<i class="fas fa-exclamation-triangle me-1"></i> ${message}`;
-      }
-    }
-
-    // Manejo de cantidades con botones + / -
-    function changeQty(size, val) {
-      currentQty[size] = Math.max(0, currentQty[size] + val);
-      document.getElementById(`qty-${size}`).innerText = currentQty[size];
-    }
-
-    // Compresión y Procesamiento Automático de Imagen de Galería
-    function processImage(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const img = new Image();
-        img.onload = function() {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-          const maxDim = 800; // Máxima resolución optimizada
-
-          if (width > height) {
-            if (width > maxDim) {
-              height *= maxDim / width;
-              width = maxDim;
-            }
-          } else {
-            if (height > maxDim) {
-              width *= maxDim / height;
-              height = maxDim;
-            }
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-
-          // Calidad 75% compresión JPEG
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75);
-
-          const output = document.getElementById('img-preview');
-          output.src = compressedDataUrl;
-          output.style.display = 'inline-block';
-          document.getElementById('prod-img-base64').value = compressedDataUrl;
-          document.getElementById('prod-img-url').value = '';
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function setUrlImage(url) {
-      if (url.trim()) {
-        document.getElementById('prod-img-base64').value = url.trim();
-        const output = document.getElementById('img-preview');
-        output.src = url.trim();
-        output.style.display = 'inline-block';
-      }
-    }
-
-    function renderProducts() {
-      const container = document.getElementById('products-container');
-      const search = document.getElementById('search-input').value.toLowerCase();
-      const filterEstado = document.getElementById('filter-estado').value;
-      const filterOcasion = document.getElementById('filter-ocasion').value;
-
-      container.innerHTML = '';
-
-      const filtered = products.filter(p => {
-        const matchSearch = p.nombre.toLowerCase().includes(search);
-        const matchEstado = (filterEstado === 'TODOS') || (p.estado === filterEstado);
-        const matchOcasion = (filterOcasion === 'TODAS') || (p.ocasion === filterOcasion);
-        return matchSearch && matchEstado && matchOcasion;
-      });
-
-      if (filtered.length === 0) {
-        container.innerHTML = `<div class="col-12 text-center text-muted py-5">
-          <i class="fas fa-box-open fa-3x mb-3"></i>
-          <p>No hay artículos para mostrar.</p>
-        </div>`;
-        return;
-      }
-
-      filtered.forEach(p => {
-        let badgeClass = 'badge-status-libre';
-        if (p.estado === 'RESERVADO') badgeClass = 'badge-status-reservado';
-        if (p.estado === 'VENDIDO') badgeClass = 'badge-status-vendido';
-
-        const col = document.createElement('div');
-        col.className = 'col-12 col-sm-6 col-md-4 col-lg-3';
-        col.innerHTML = `
-          <div class="card card-product h-100">
-            <div class="position-relative">
-              <img src="${p.img || 'https://via.placeholder.com/300x300?text=MAISHAN'}" class="product-img" alt="${p.nombre}">
-              <span class="position-absolute top-0 end-0 badge ${badgeClass} m-2">${p.estado}</span>
-            </div>
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title fs-6 fw-bold mb-1">${p.nombre}</h5>
-              <p class="text-muted small mb-2"><i class="fas fa-tag me-1"></i>${p.ocasion || 'Urbano / Casual'}</p>
-              
-              <div class="mb-2">
-                <strong class="fs-5 text-dark">$${Number(p.precioVenta).toLocaleString()}</strong>
-              </div>
-
-              <!-- Stock por Talles -->
-              <div class="bg-light p-2 rounded mb-3 small">
-                <div><strong>S:</strong> ${p.stockS ? p.stockS.qty + ' dispon. ' + (p.stockS.color ? '('+p.stockS.color+')' : '') : 'Agotado'}</div>
-                <div><strong>M:</strong> ${p.stockM ? p.stockM.qty + ' dispon. ' + (p.stockM.color ? '('+p.stockM.color+')' : '') : 'Agotado'}</div>
-                <div><strong>L:</strong> ${p.stockL ? p.stockL.qty + ' dispon. ' + (p.stockL.color ? '('+p.stockL.color+')' : '') : 'Agotado'}</div>
-                <div><strong>XL:</strong> ${p.stockXL ? p.stockXL.qty + ' dispon. ' + (p.stockXL.color ? '('+p.stockXL.color+')' : '') : 'Agotado'}</div>
-                <div><strong>XXL:</strong> ${p.stockXXL ? p.stockXXL.qty + ' dispon. ' + (p.stockXXL.color ? '('+p.stockXXL.color+')' : '') : 'Agotado'}</div>
-              </div>
-
-              ${p.nota ? `<p class="text-warning small mb-2"><i class="fas fa-sticky-note me-1"></i>${p.nota}</p>` : ''}
-
-              <div class="mt-auto">
-                <button class="btn btn-success btn-sm w-100 mb-2" onclick="sendWhatsAppQuick('${p.id}')">
-                  <i class="fab fa-whatsapp me-1"></i> Responder Stock (1 Clic)
+                <button class="btn-action" onclick="openAddModal()">
+                    <i class="fa-solid fa-plus"></i> Cargar Prenda
                 </button>
-
-                ${isAdmin ? `
-                  <div class="d-flex gap-1">
-                    <button class="btn btn-outline-primary btn-sm flex-fill" onclick="editProduct('${p.id}')"><i class="fas fa-edit"></i> Editar</button>
-                    <button class="btn btn-outline-danger btn-sm" onclick="deleteProduct('${p.id}')"><i class="fas fa-trash"></i></button>
-                  </div>
-                ` : ''}
-              </div>
-
             </div>
-          </div>
-        `;
-        container.appendChild(col);
-      });
-    }
 
-    function sendWhatsAppQuick(id) {
-      const p = products.find(prod => prod.id === id);
-      if (!p) return;
+            <!-- TABLA MATRIZ ALTA DENSIDAD -->
+            <div class="table-responsive">
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th>Código / Producto</th>
+                            <th>Precio Venta</th>
+                            <th>Costo + Gastos</th>
+                            <th>Desglose Variantes (Talle × Color)</th>
+                            <th>Stock Total</th>
+                            <th>Estado</th>
+                            <th class="no-print">Acciones Rápidas</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-tbody">
+                        <!-- Se genera dinámicamente con JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-      let msg = `*MAISHAN - INDUMENTARIA & ESTILO*\n`;
-      msg += `📌 *Producto:* ${p.nombre}\n`;
-      msg += `💰 *Precio:* $${Number(p.precioVenta).toLocaleString()}\n\n`;
-      msg += `📦 *STOCK Y DISPONIBILIDAD HOY:*\n`;
-      msg += `▫️ *Talle S:* ${p.stockS && p.stockS.qty > 0 ? '✅ ' + p.stockS.qty + ' dispon. (' + p.stockS.color + ')' : '❌ Agotado'}\n`;
-      msg += `▫️ *Talle M:* ${p.stockM && p.stockM.qty > 0 ? '✅ ' + p.stockM.qty + ' dispon. (' + p.stockM.color + ')' : '❌ Agotado'}\n`;
-      msg += `▫️ *Talle L:* ${p.stockL && p.stockL.qty > 0 ? '✅ ' + p.stockL.qty + ' dispon. (' + p.stockL.color + ')' : '❌ Agotado'}\n`;
-      msg += `▫️ *Talle XL:* ${p.stockXL && p.stockXL.qty > 0 ? '✅ ' + p.stockXL.qty + ' dispon. (' + p.stockXL.color + ')' : '❌ Agotado'}\n`;
-      msg += `▫️ *Talle XXL:* ${p.stockXXL && p.stockXXL.qty > 0 ? '✅ ' + p.stockXXL.qty + ' dispon. (' + p.stockXXL.color + ')' : '❌ Agotado'}\n\n`;
-      msg += `⚡ *¡Quedan pocas unidades! Indicame talle y color para reservártelo.*`;
+        <!-- PESTAÑA 2: DASHBOARD FINANCIERO -->
+        <div id="finance-tab" class="tab-content">
+            <div class="control-bar">
+                <h3 style="margin:0;"><i class="fa-solid fa-file-invoice-dollar"></i> Estado Contable y Márgenes</h3>
+                <button class="btn-action" onclick="window.print()">
+                    <i class="fa-solid fa-print"></i> Imprimir Reporte PDF
+                </button>
+            </div>
 
-      const encoded = encodeURIComponent(msg);
-      window.open(`https://wa.me/${configWhatsApp}?text=${encoded}`, '_blank');
-    }
+            <div class="finance-grid">
+                <div class="finance-card">
+                    <h4>Capital Invertido (Stock Directo)</h4>
+                    <div class="amount" id="fin-capital">$0</div>
+                    <div class="subtext">Costo directo de compra/fabricación</div>
+                </div>
+                <div class="finance-card">
+                    <h4>Gastos Agregados Acumulados</h4>
+                    <div class="amount" id="fin-expenses">$0</div>
+                    <div class="subtext">Packaging, envíos y arreglos</div>
+                </div>
+                <div class="finance-card">
+                    <h4>Valor Total de Venta Esperado</h4>
+                    <div class="amount" id="fin-sales-val">$0</div>
+                    <div class="subtext">Si se vende todo el stock actual</div>
+                </div>
+                <div class="finance-card">
+                    <h4>Ganancia Neta Estimada</h4>
+                    <div class="amount" style="color: var(--green);" id="fin-profit">$0</div>
+                    <div class="subtext">Venta Esperada - Capital - Gastos</div>
+                </div>
+            </div>
 
-    function updateDashboard() {
-      let capital = 0, reservas = 0, ventas = 0, ganancia = 0;
+            <div class="table-responsive">
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Unidades</th>
+                            <th>Costo Directo</th>
+                            <th>Gastos Agregados</th>
+                            <th>Costo Total U.</th>
+                            <th>Precio Venta U.</th>
+                            <th>Margen Neto U.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="finance-tbody">
+                        <!-- Carga dinámica -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-      products.forEach(p => {
-        const costoTotal = (Number(p.costoDirecto) || 0) + (Number(p.costoAgregado) || 0);
-        const precioVenta = Number(p.precioVenta) || 0;
-        const margen = precioVenta - costoTotal;
+        <!-- PESTAÑA 3: GENERADOR PARA REDES / WHATSAPP -->
+        <div id="whatsapp-tab" class="tab-content">
+            <div class="control-bar">
+                <h3><i class="fa-brands fa-whatsapp"></i> Generador de Stock para Mensajes</h3>
+            </div>
+            <div class="finance-card" style="max-width: 600px; margin: 0 auto;">
+                <div class="form-group">
+                    <label>Seleccionar Prenda para Enviar a Cliente:</label>
+                    <select id="wa-product-select" onchange="generateWAString()">
+                        <!-- Opciones dinámicas -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Texto Formateado para WhatsApp / IG Story:</label>
+                    <textarea id="wa-text-output" rows="8" style="width: 100%; background: var(--bg-input); border:1px solid var(--border); color:#fff; padding:10px; border-radius:6px;" readonly></textarea>
+                </div>
+                <button class="btn-action" style="width: 100%; justify-content: center;" onclick="copyWAText()">
+                    <i class="fa-solid fa-copy"></i> Copiar Texto al Portapapeles
+                </button>
+            </div>
+        </div>
+    </div>
 
-        if (p.estado === 'LIBRE') capital += costoTotal;
-        else if (p.estado === 'RESERVADO') reservas += costoTotal;
-        else if (p.estado === 'VENDIDO') {
-          ventas += precioVenta;
-          ganancia += margen;
+    <!-- MODAL DE CARGA Y EDICIÓN DE PRENDAS -->
+    <div class="modal-backdrop" id="product-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Cargar Nueva Prenda MAISHAN</h3>
+                <button style="background:none; border:none; color:#fff; cursor:pointer;" onclick="closeAddModal()"><i class="fa-solid fa-xmark fa-lg"></i></button>
+            </div>
+            <form id="product-form" onsubmit="saveProduct(event)">
+                <input type="hidden" id="edit-id">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Código / SKU:</label>
+                        <input type="text" id="p-sku" required placeholder="Ej. MSH-01">
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre del Producto:</label>
+                        <input type="text" id="p-name" required placeholder="Ej. Remera Oversize Tokio">
+                    </div>
+                    <div class="form-group">
+                        <label>Costo Directo ($):</label>
+                        <input type="number" id="p-cost" required min="0" placeholder="Ej. 4500">
+                    </div>
+                    <div class="form-group">
+                        <label>Gastos Agregados ($):</label>
+                        <input type="number" id="p-extra-cost" required min="0" placeholder="Ej. 500 (bolsas/envío)">
+                    </div>
+                    <div class="form-group full">
+                        <label>Precio de Venta ($):</label>
+                        <input type="number" id="p-price" required min="0" placeholder="Ej. 12000">
+                    </div>
+                </div>
+
+                <div style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px;">
+                    <label style="font-weight: 700; color: var(--accent);">Cargar Variantes (Talle, Color y Cantidad):</label>
+                    <div id="variants-container" style="margin-top: 10px;">
+                        <!-- Filas de variantes dinámicas -->
+                    </div>
+                    <button type="button" class="btn-filter" style="margin-top: 8px;" onclick="addVariantRow()">
+                        <i class="fa-solid fa-plus"></i> Agregar Variante
+                    </button>
+                </div>
+
+                <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" class="btn-filter" onclick="closeAddModal()">Cancelar</button>
+                    <button type="submit" class="btn-action">Guardar Prenda</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LÓGICA DE NEGOCIO -->
+    <script>
+        // ESTADO INICIAL
+        let products = JSON.parse(localStorage.getItem('maishan_products')) || [
+            {
+                id: '1',
+                sku: 'MSH-01',
+                name: 'Remera Oversize Tokio',
+                cost: 4500,
+                extraCost: 500,
+                price: 12000,
+                variants: [
+                    { talle: 'S', color: 'Negro', stock: 3 },
+                    { talle: 'S', color: 'Blanco', stock: 2 },
+                    { talle: 'M', color: 'Negro', stock: 5 },
+                    { talle: 'M', color: 'Gris Topo', stock: 1 },
+                    { talle: 'L', color: 'Negro', stock: 0 }
+                ]
+            },
+            {
+                id: '2',
+                sku: 'MSH-02',
+                name: 'Pantalón Cargo Black',
+                cost: 8500,
+                extraCost: 800,
+                price: 22000,
+                variants: [
+                    { talle: 'M', color: 'Negro', stock: 1 },
+                    { talle: 'L', color: 'Negro', stock: 0 }
+                ]
+            }
+        ];
+
+        let currentFilter = 'all';
+
+        // INICIALIZACIÓN
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('print-date').innerText = new Date().toLocaleDateString('es-AR');
+            renderInventory();
+            renderFinance();
+            populateWASelect();
+        });
+
+        function saveToStorage() {
+            localStorage.setItem('maishan_products', JSON.stringify(products));
         }
-      });
 
-      document.getElementById('dash-capital').innerText = `$${capital.toLocaleString()}`;
-      document.getElementById('dash-reservas').innerText = `$${reservas.toLocaleString()}`;
-      document.getElementById('dash-ventas').innerText = `$${ventas.toLocaleString()}`;
-      document.getElementById('dash-ganancia').innerText = `$${ganancia.toLocaleString()}`;
-    }
+        // PESTAÑAS
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
 
-    function openProductModal() {
-      document.getElementById('product-form').reset();
-      document.getElementById('prod-id').value = '';
-      document.getElementById('prod-img-base64').value = '';
-      document.getElementById('prod-img-url').value = '';
-      document.getElementById('img-preview').style.display = 'none';
-      
-      currentQty = { s: 0, m: 0, l: 0, xl: 0, xxl: 0 };
-      ['s','m','l','xl','xxl'].forEach(size => {
-        document.getElementById(`qty-${size}`).innerText = '0';
-        document.getElementById(`color-${size}`).value = '';
-      });
+            if (tabId === 'finance-tab') renderFinance();
+            if (tabId === 'whatsapp-tab') populateWASelect();
+        }
 
-      document.getElementById('modalProductTitle').innerText = 'Nuevo Artículo - MAISHAN';
-      new bootstrap.Modal(document.getElementById('modalProduct')).show();
-    }
+        function setFilter(type, btn) {
+            currentFilter = type;
+            document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderInventory();
+        }
 
-    function editProduct(id) {
-      const p = products.find(item => item.id === id);
-      if (!p) return;
+        // RENDER INVENTARIO
+        function renderInventory() {
+            const tbody = document.getElementById('inventory-tbody');
+            const search = document.getElementById('search-input').value.toLowerCase();
+            tbody.innerHTML = '';
 
-      document.getElementById('prod-id').value = p.id;
-      document.getElementById('prod-nombre').value = p.nombre;
-      document.getElementById('prod-img-base64').value = p.img || '';
-      document.getElementById('prod-img-url').value = '';
-      
-      if (p.img) {
-        document.getElementById('img-preview').src = p.img;
-        document.getElementById('img-preview').style.display = 'inline-block';
-      }
+            products.forEach(p => {
+                const totalStock = p.variants.reduce((acc, v) => acc + Number(v.stock), 0);
+                
+                // Filtros
+                let matchesFilter = true;
+                if (currentFilter === 'stock' && totalStock === 0) matchesFilter = false;
+                if (currentFilter === 'low' && (totalStock === 0 || totalStock > 2)) matchesFilter = false;
+                if (currentFilter === 'out' && totalStock > 0) matchesFilter = false;
 
-      document.getElementById('prod-estado').value = p.estado;
-      document.getElementById('prod-ocasion').value = p.ocasion || 'Urbano / Casual';
-      document.getElementById('prod-nota').value = p.nota || '';
-      document.getElementById('prod-costo-directo').value = p.costoDirecto || 0;
-      document.getElementById('prod-costo-agregado').value = p.costoAgregado || 0;
-      document.getElementById('prod-precio-venta').value = p.precioVenta || 0;
+                const matchesSearch = p.name.toLowerCase().includes(search) || 
+                                      p.sku.toLowerCase().includes(search) ||
+                                      p.variants.some(v => v.color.toLowerCase().includes(search) || v.talle.toLowerCase().includes(search));
 
-      currentQty = {
-        s: p.stockS ? p.stockS.qty : 0,
-        m: p.stockM ? p.stockM.qty : 0,
-        l: p.stockL ? p.stockL.qty : 0,
-        xl: p.stockXL ? p.stockXL.qty : 0,
-        xxl: p.stockXXL ? p.stockXXL.qty : 0
-      };
+                if (matchesFilter && matchesSearch) {
+                    let badgeClass = 'badge-green';
+                    let badgeText = 'En Stock';
+                    if (totalStock === 0) { badgeClass = 'badge-red'; badgeText = 'Agotado'; }
+                    else if (totalStock <= 2) { badgeClass = 'badge-amber'; badgeText = 'Bajo Stock'; }
 
-      ['s','m','l','xl','xxl'].forEach(size => {
-        document.getElementById(`qty-${size}`).innerText = currentQty[size];
-        const key = 'stock' + size.toUpperCase();
-        document.getElementById(`color-${size}`).value = p[key] ? p[key].color : '';
-      });
+                    let variantsHTML = p.variants.map((v, idx) => `
+                        <span class="variant-tag">
+                            <strong>${v.talle}</strong> / ${v.color}: 
+                            <button class="stock-control-btn no-print" onclick="changeStock('${p.id}', ${idx}, -1)">-</button>
+                            <strong>${v.stock} u.</strong>
+                            <button class="stock-control-btn no-print" onclick="changeStock('${p.id}', ${idx}, 1)">+</button>
+                        </span>
+                    `).join('');
 
-      document.getElementById('modalProductTitle').innerText = 'Editar Artículo - MAISHAN';
-      new bootstrap.Modal(document.getElementById('modalProduct')).show();
-    }
+                    const totalCostUnit = Number(p.cost) + Number(p.extraCost);
 
-    function saveProduct() {
-      const id = document.getElementById('prod-id').value;
-      const nombre = document.getElementById('prod-nombre').value;
-      const img = document.getElementById('prod-img-base64').value;
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>
+                                <strong>${p.sku}</strong><br>
+                                <span style="font-size:0.95rem; font-weight:600;">${p.name}</span>
+                            </td>
+                            <td><strong style="color:var(--green);">$${Number(p.price).toLocaleString()}</strong></td>
+                            <td>$${totalCostUnit.toLocaleString()} <span style="font-size:0.75rem; color:var(--text-muted);">($${p.cost} + $${p.extraCost})</span></td>
+                            <td>${variantsHTML}</td>
+                            <td><strong style="font-size:1.1rem;">${totalStock} u.</strong></td>
+                            <td><span class="badge ${badgeClass}">${badgeText}</span></td>
+                            <td class="no-print">
+                                <button class="stock-control-btn" style="width:auto; padding:0 8px;" onclick="openEditModal('${p.id}')">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button class="stock-control-btn" style="width:auto; padding:0 8px; background:var(--red-bg);" onclick="deleteProduct('${p.id}')">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }
+            });
+        }
 
-      if (!nombre) {
-        alert('Por favor complete el nombre de la prenda.');
-        return;
-      }
+        // CONTROL RÁPIDO DE STOCK (+ / -)
+        function changeStock(productId, variantIdx, delta) {
+            const p = products.find(item => item.id === productId);
+            if (p && p.variants[variantIdx]) {
+                const newStock = Number(p.variants[variantIdx].stock) + delta;
+                if (newStock >= 0) {
+                    p.variants[variantIdx].stock = newStock;
+                    saveToStorage();
+                    renderInventory();
+                }
+            }
+        }
 
-      const productData = {
-        id: id || 'prod_' + Date.now(),
-        nombre: nombre,
-        img: img,
-        estado: document.getElementById('prod-estado').value,
-        ocasion: document.getElementById('prod-ocasion').value,
-        nota: document.getElementById('prod-nota').value,
-        costoDirecto: Number(document.getElementById('prod-costo-directo').value) || 0,
-        costoAgregado: Number(document.getElementById('prod-costo-agregado').value) || 0,
-        precioVenta: Number(document.getElementById('prod-precio-venta').value) || 0,
-        stockS: { qty: currentQty.s, color: document.getElementById('color-s').value },
-        stockM: { qty: currentQty.m, color: document.getElementById('color-m').value },
-        stockL: { qty: currentQty.l, color: document.getElementById('color-l').value },
-        stockXL: { qty: currentQty.xl, color: document.getElementById('color-xl').value },
-        stockXXL: { qty: currentQty.xxl, color: document.getElementById('color-xxl').value }
-      };
+        // DASHBOARD FINANCIERO
+        function renderFinance() {
+            let totalCapital = 0;
+            let totalExpenses = 0;
+            let totalSalesVal = 0;
 
-      if (id) {
-        const index = products.findIndex(p => p.id === id);
-        if (index !== -1) products[index] = productData;
-      } else {
-        products.push(productData);
-      }
+            const tbody = document.getElementById('finance-tbody');
+            tbody.innerHTML = '';
 
-      bootstrap.Modal.getInstance(document.getElementById('modalProduct')).hide();
-      saveDataToCloud();
-    }
+            products.forEach(p => {
+                const totalUnits = p.variants.reduce((acc, v) => acc + Number(v.stock), 0);
+                const itemCapital = p.cost * totalUnits;
+                const itemExpenses = p.extraCost * totalUnits;
+                const itemSalesVal = p.price * totalUnits;
 
-    function deleteProduct(id) {
-      if (confirm('¿Seguro que deseas eliminar este artículo?')) {
-        products = products.filter(p => p.id !== id);
-        saveDataToCloud();
-      }
-    }
+                totalCapital += itemCapital;
+                totalExpenses += itemExpenses;
+                totalSalesVal += itemSalesVal;
 
-    function exportPDF() {
-      const pdfList = document.getElementById('pdf-content-list');
-      pdfList.innerHTML = '';
+                const costUnitTotal = Number(p.cost) + Number(p.extraCost);
+                const marginUnit = Number(p.price) - costUnitTotal;
 
-      const disponibles = products.filter(p => p.estado === 'LIBRE');
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${p.name}</strong> (${p.sku})</td>
+                        <td>${totalUnits} u.</td>
+                        <td>$${itemCapital.toLocaleString()}</td>
+                        <td>$${itemExpenses.toLocaleString()}</td>
+                        <td>$${costUnitTotal.toLocaleString()}</td>
+                        <td>$${Number(p.price).toLocaleString()}</td>
+                        <td><strong style="color:var(--green);">$${marginUnit.toLocaleString()}</strong></td>
+                    </tr>
+                `;
+            });
 
-      if (disponibles.length === 0) {
-        alert('No hay productos disponibles para exportar.');
-        return;
-      }
+            const totalProfit = totalSalesVal - (totalCapital + totalExpenses);
 
-      disponibles.forEach(p => {
-        const div = document.createElement('div');
-        div.style.width = '48%';
-        div.style.display = 'inline-block';
-        div.style.marginBottom = '20px';
-        div.style.verticalAlign = 'top';
-        div.style.boxSizing = 'border-box';
-        div.style.padding = '10px';
-        div.style.border = '1px solid #ddd';
+            document.getElementById('fin-capital').innerText = `$${totalCapital.toLocaleString()}`;
+            document.getElementById('fin-expenses').innerText = `$${totalExpenses.toLocaleString()}`;
+            document.getElementById('fin-sales-val').innerText = `$${totalSalesVal.toLocaleString()}`;
+            document.getElementById('fin-profit').innerText = `$${totalProfit.toLocaleString()}`;
+        }
 
-        div.innerHTML = `
-          <img src="${p.img || 'https://via.placeholder.com/300x300'}" style="width: 100%; height: 180px; object-fit: cover; margin-bottom: 8px;">
-          <h4 style="margin: 0 0 5px 0; font-size: 14px;">${p.nombre}</h4>
-          <p style="margin: 0 0 5px 0; font-weight: bold; font-size: 16px;">$${Number(p.precioVenta).toLocaleString()}</p>
-          <div style="font-size: 10px; color: #555;">
-            <div>S: ${p.stockS && p.stockS.qty > 0 ? p.stockS.qty + ' (' + p.stockS.color + ')' : '-'}</div>
-            <div>M: ${p.stockM && p.stockM.qty > 0 ? p.stockM.qty + ' (' + p.stockM.color + ')' : '-'}</div>
-            <div>L: ${p.stockL && p.stockL.qty > 0 ? p.stockL.qty + ' (' + p.stockL.color + ')' : '-'}</div>
-            <div>XL: ${p.stockXL && p.stockXL.qty > 0 ? p.stockXL.qty + ' (' + p.stockXL.color + ')' : '-'}</div>
-          </div>
-        `;
-        pdfList.appendChild(div);
-      });
+        // GENERADOR DE TEXTO PARA WHATSAPP
+        function populateWASelect() {
+            const select = document.getElementById('wa-product-select');
+            select.innerHTML = '';
+            products.forEach(p => {
+                select.innerHTML += `<option value="${p.id}">${p.sku} - ${p.name}</option>`;
+            });
+            generateWAString();
+        }
 
-      const element = document.getElementById('pdf-template');
-      element.style.display = 'block';
+        function generateWAString() {
+            const id = document.getElementById('wa-product-select').value;
+            const p = products.find(item => item.id === id);
+            if (!p) return;
 
-      const opt = {
-        margin:       0.5,
-        filename:     'MAISHAN_Stock_Disponible.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-      };
+            let text = `🔥 *MAISHAN INDUMENTARIA & ESTILO* 🔥\n`;
+            text += `📌 *${p.name}* (Ref: ${p.sku})\n`;
+            text += `💰 *Precio:* $${Number(p.price).toLocaleString()}\n\n`;
+            text += `📏 *DISPONIBILIDAD EN STOCK:*\n`;
 
-      html2pdf().set(opt).from(element).save().then(() => {
-        element.style.display = 'none';
-      });
-    }
-  </script>
+            // Agrupar por talle
+            const byTalle = {};
+            p.variants.forEach(v => {
+                if (!byTalle[v.talle]) byTalle[v.talle] = [];
+                byTalle[v.talle].push(`${v.color} (${v.stock}u)`);
+            });
+
+            for (const talle in byTalle) {
+                text += `• *Talle ${talle}:* ${byTalle[talle].join(', ')}\n`;
+            }
+
+            text += `\n📲 *Consultanos por envíos y reservas directas!*`;
+            text += `\n📸 Instagram / TikTok: @maishan_ind.official`;
+
+            document.getElementById('wa-text-output').value = text;
+        }
+
+        function copyWAText() {
+            const txt = document.getElementById('wa-text-output');
+            txt.select();
+            navigator.clipboard.writeText(txt.value);
+            alert('¡Texto copiado para WhatsApp / Instagram!');
+        }
+
+        // MODAL Y VARIANTES
+        function openAddModal() {
+            document.getElementById('modal-title').innerText = 'Cargar Nueva Prenda MAISHAN';
+            document.getElementById('product-form').reset();
+            document.getElementById('edit-id').value = '';
+            document.getElementById('variants-container').innerHTML = '';
+            addVariantRow('S', 'Negro', 1);
+            document.getElementById('product-modal').classList.add('show');
+        }
+
+        function openEditModal(id) {
+            const p = products.find(item => item.id === id);
+            if (!p) return;
+
+            document.getElementById('modal-title').innerText = 'Editar Prenda';
+            document.getElementById('edit-id').value = p.id;
+            document.getElementById('p-sku').value = p.sku;
+            document.getElementById('p-name').value = p.name;
+            document.getElementById('p-cost').value = p.cost;
+            document.getElementById('p-extra-cost').value = p.extraCost;
+            document.getElementById('p-price').value = p.price;
+
+            const container = document.getElementById('variants-container');
+            container.innerHTML = '';
+            p.variants.forEach(v => addVariantRow(v.talle, v.color, v.stock));
+
+            document.getElementById('product-modal').classList.add('show');
+        }
+
+        function closeAddModal() {
+            document.getElementById('product-modal').classList.remove('show');
+        }
+
+        function addVariantRow(talle = 'S', color = 'Negro', stock = 0) {
+            const container = document.getElementById('variants-container');
+            const row = document.createElement('div');
+            row.className = 'form-grid';
+            row.style.marginBottom = '8px';
+            row.innerHTML = `
+                <input type="text" placeholder="Talle (S, M, L)" class="v-talle" value="${talle}" required>
+                <input type="text" placeholder="Color" class="v-color" value="${color}" required>
+                <input type="number" placeholder="Stock" class="v-stock" value="${stock}" min="0" required>
+                <button type="button" class="btn-filter" style="background:var(--red-bg);" onclick="this.parentElement.remove()"><i class="fa-solid fa-trash"></i></button>
+            `;
+            container.appendChild(row);
+        }
+
+        function saveProduct(e) {
+            e.preventDefault();
+            const editId = document.getElementById('edit-id').value;
+            const sku = document.getElementById('p-sku').value;
+            const name = document.getElementById('p-name').value;
+            const cost = Number(document.getElementById('p-cost').value);
+            const extraCost = Number(document.getElementById('p-extra-cost').value);
+            const price = Number(document.getElementById('p-price').value);
+
+            const variantRows = document.querySelectorAll('#variants-container .form-grid');
+            const variants = [];
+            variantRows.forEach(row => {
+                variants.push({
+                    talle: row.querySelector('.v-talle').value,
+                    color: row.querySelector('.v-color').value,
+                    stock: Number(row.querySelector('.v-stock').value)
+                });
+            });
+
+            if (editId) {
+                const idx = products.findIndex(p => p.id === editId);
+                if (idx !== -1) {
+                    products[idx] = { id: editId, sku, name, cost, extraCost, price, variants };
+                }
+            } else {
+                products.push({
+                    id: Date.now().toString(),
+                    sku, name, cost, extraCost, price, variants
+                });
+            }
+
+            saveToStorage();
+            closeAddModal();
+            renderInventory();
+        }
+
+        function deleteProduct(id) {
+            if (confirm('¿Seguro que deseas eliminar esta prenda?')) {
+                products = products.filter(p => p.id !== id);
+                saveToStorage();
+                renderInventory();
+            }
+        }
+    </script>
 </body>
-                        </html>
+</html>
