@@ -2,812 +2,673 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>MAISHAN INDUMENTARIA & ESTILO</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MAISHAN - Indumentaria & Estilo | Panel & Catálogo</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- html2pdf.js library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
   <style>
     :root {
-      --primary: #0f172a;
-      --accent: #2563eb;
-      --whatsapp: #25d366;
-      --bg: #f1f5f9;
-      --card-bg: #ffffff;
-      --border: #cbd5e1;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --success-bg: #dcfce7;
-      --success-text: #166534;
-      --danger-bg: #fee2e2;
-      --danger-text: #991b1b;
-      --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
-      --radius: 18px;
+      --primary-color: #1a1a1a;
+      --accent-color: #d4af37;
+      --bg-light: #f8f9fa;
     }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-    body { background-color: var(--bg); color: var(--text-main); padding: 16px; max-width: 1200px; margin: 0 auto; }
-
-    .brand-banner-container {
-      width: 100%;
-      height: 180px;
-      border-radius: var(--radius);
-      overflow: hidden;
-      position: relative;
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      margin-bottom: 20px;
-      box-shadow: var(--shadow);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    body {
+      background-color: var(--bg-light);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+    }
+    .navbar-brand {
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--accent-color) !important;
+    }
+    .header-banner {
+      background-color: var(--primary-color);
+      color: #fff;
+      padding: 2rem 1rem;
       text-align: center;
-      color: white;
+      border-bottom: 4px solid var(--accent-color);
+      margin-bottom: 2rem;
     }
-
-    .brand-banner-img {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+    .card-product {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transition: transform 0.2s;
+      background: #fff;
+      overflow: hidden;
+    }
+    .card-product:hover {
+      transform: translateY(-4px);
+    }
+    .product-img {
+      height: 250px;
       object-fit: cover;
-      opacity: 0.85;
-    }
-
-    .brand-overlay {
-      position: relative;
-      z-index: 2;
-      padding: 16px;
-      background: rgba(15, 23, 42, 0.4);
       width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      backdrop-filter: blur(2px);
     }
-
-    .brand-title {
-      font-size: 2rem;
-      font-weight: 800;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
-    }
-
-    .brand-subtitle {
-      font-size: 0.9rem;
-      font-weight: 600;
-      opacity: 0.9;
-      letter-spacing: 2px;
-      margin-top: 4px;
-    }
-
-    header { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
-    .header-btns { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-    .btn { padding: 10px 16px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; font-size: 0.85rem; text-align: center; transition: all 0.2s ease; }
-    .btn:active { transform: scale(0.97); }
-    .btn-primary { background-color: var(--accent); color: white; }
-    .btn-whatsapp { background-color: var(--whatsapp); color: white; }
-    .btn-outline { background: white; border: 1px solid var(--border); color: var(--text-main); }
-    .btn-danger { background-color: #ef4444; color: white; }
-    .btn-warning { background-color: #f59e0b; color: white; }
-
-    .finance-card {
-      background: white; border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 18px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;
-      box-shadow: var(--shadow);
-    }
-    .finance-item { text-align: center; }
-    .finance-item label { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
-    .finance-item val { display: block; font-size: 1.4rem; font-weight: 800; color: var(--primary); margin-top: 4px; }
-
-    .controls { margin-bottom: 20px; }
-    .search-input { padding: 14px 18px; border: 1px solid var(--border); border-radius: 12px; font-size: 0.95rem; background: white; width: 100%; outline: none; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-
-    .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 22px; }
-    .product-card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s ease; }
-    .product-card:hover { transform: translateY(-2px); }
-
-    .gallery-container { position: relative; width: 100%; height: 240px; background-color: #f8fafc; overflow: hidden; }
-    .product-img { width: 100%; height: 100%; object-fit: cover; }
-    .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(15, 23, 42, 0.6); color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; z-index: 5; }
-    .nav-prev { left: 8px; }
-    .nav-next { right: 8px; }
-    .img-counter { position: absolute; bottom: 8px; right: 8px; background: rgba(15, 23, 42, 0.7); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 700; }
-
-    .product-info { padding: 18px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
-    .product-title { font-size: 1.15rem; font-weight: 800; color: var(--text-main); }
-    .product-price { font-size: 1.35rem; font-weight: 800; color: var(--accent); }
-
-    .variants-summary { background: #f8fafc; padding: 12px; border-radius: 10px; font-size: 0.82rem; color: var(--text-muted); border: 1px solid #e2e8f0; }
-    .color-row { margin-bottom: 8px; }
-    .color-row:last-child { margin-bottom: 0; }
-    .variant-item { display: inline-flex; align-items: center; gap: 4px; background: white; border: 1px solid var(--border); padding: 4px 8px; border-radius: 6px; margin: 3px 2px; font-weight: 600; }
-
-    .stock-btn { width: 22px; height: 22px; border-radius: 4px; border: 1px solid var(--border); background: #f1f5f9; color: #0f172a; font-weight: 800; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
-    .stock-badge { align-self: start; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
-    .in-stock { background-color: var(--success-bg); color: var(--success-text); }
-    .out-stock { background-color: var(--danger-bg); color: var(--danger-text); }
-
-    .card-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-    .action-row { display: flex; gap: 6px; }
-
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); display: flex; justify-content: center; align-items: center; padding: 16px; z-index: 100; visibility: hidden; opacity: 0; transition: all 0.2s ease; backdrop-filter: blur(3px); }
-    .modal-overlay.active { visibility: visible; opacity: 1; }
-    .modal { background: white; padding: 22px; border-radius: var(--radius); width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); }
-    .modal h2 { margin-bottom: 14px; font-size: 1.15rem; font-weight: 800; }
-    .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 4px; color: var(--text-main); }
-    .form-group input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.88rem; outline: none; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
-
-    .matrix-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-    .matrix-table th, .matrix-table td { padding: 8px; text-align: center; border: 1px solid var(--border); font-size: 0.8rem; }
-    .matrix-table th { background: #f1f5f9; font-weight: 700; }
-    .matrix-table input { width: 50px; text-align: center; padding: 4px; border: 1px solid var(--border); border-radius: 4px; }
+    .badge-status-libre { background-color: #198754; }
+    .badge-status-reservado { background-color: #ffc107; color: #000; }
+    .badge-status-vendido { background-color: #dc3545; }
     
-    .previews-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; margin-top: 8px; }
-    .preview-thumb { width: 100%; height: 80px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); }
+    .social-links a {
+      color: #fff;
+      font-size: 1.2rem;
+      margin: 0 8px;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .social-links a:hover {
+      color: var(--accent-color);
+    }
+    .btn-custom {
+      background-color: var(--primary-color);
+      color: #fff;
+    }
+    .btn-custom:hover {
+      background-color: #333;
+      color: var(--accent-color);
+    }
     
-    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); grid-column: 1 / -1; }
-    .sales-list { list-style: none; margin-top: 10px; max-height: 300px; overflow-y: auto; }
-    .sales-item { padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; }
-
-    .loading-banner { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; text-align: center; padding: 10px; border-radius: 10px; margin-bottom: 15px; font-weight: 600; font-size: 0.85rem; }
-    .admin-only { display: none; }
+    /* PDF Export Styles */
+    #pdf-template {
+      display: none;
+      background: #fff;
+      padding: 20px;
+    }
+    .pdf-header {
+      text-align: center;
+      border-bottom: 2px solid #000;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
 
-  <div class="brand-banner-container">
-    <img id="bannerImg" class="brand-banner-img" src="https://via.placeholder.com/1200x400/0f172a/ffffff?text=MAISHAN" alt="Portada MAISHAN">
-    <div class="brand-overlay">
-      <div class="brand-title">MAISHAN</div>
-      <div class="brand-subtitle">INDUMENTARIA & ESTILO</div>
+  <!-- Top Sync Bar -->
+  <div class="bg-dark text-white py-1 px-3 d-flex justify-content-between align-items-center text-small" style="font-size: 0.85rem;">
+    <div>
+      <span id="sync-status" class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Sincronizado</span>
+      <span class="ms-2 d-none d-sm-inline text-muted">JSONBin.io Sync Activo</span>
+    </div>
+    <div>
+      <button class="btn btn-sm btn-outline-light py-0" onclick="loadDataFromCloud()">
+        <i class="fas fa-sync-alt me-1"></i> Actualizar Ahora
+      </button>
+      <button id="btn-toggle-admin" class="btn btn-sm btn-outline-warning py-0 ms-2" onclick="toggleAdminModal()">
+        <i class="fas fa-lock me-1"></i> Modo Admin
+      </button>
     </div>
   </div>
 
-  <div id="syncStatus" class="loading-banner">🔄 Conectando con el catálogo en la nube...</div>
-
-  <header>
-    <div class="header-btns">
-      <button class="btn btn-whatsapp" id="btnShareCatalog">📲 Compartir Catálogo a Clientes</button>
-      <button class="btn btn-outline admin-only" id="btnPrintPDF">🖨️ PDF Catálogo</button>
-      <button class="btn btn-outline admin-only" id="btnViewSalesHistory">📋 Historial Ventas</button>
-      <button class="btn btn-outline admin-only" id="btnChangeBanner">🖼️ Foto Portada</button>
-      <button class="btn btn-outline" id="btnToggleAdmin">🔐 Acceso Admin</button>
-      <button class="btn btn-primary admin-only" id="btnAdd">➕ Nuevo Producto</button>
-    </div>
-  </header>
-
-  <div class="finance-card admin-only" id="financePanel">
-    <div class="finance-item">
-      <label>No Vendido (Stock Activo)</label>
-      <val id="valStockTotal">0 u. ($0)</val>
-    </div>
-    <div class="finance-item">
-      <label>Unidades Vendidas</label>
-      <val id="valUnitsSold">0 u.</val>
-    </div>
-    <div class="finance-item">
-      <label>Total Recaudado (Ventas)</label>
-      <val id="valTotalRevenue">$0</val>
+  <!-- Header Banner / Logo -->
+  <div class="header-banner">
+    <h1 class="display-5 fw-bold text-uppercase">MAISHAN</h1>
+    <p class="lead mb-2" style="letter-spacing: 2px; font-size: 1rem;">INDUMENTARIA & ESTILO</p>
+    
+    <!-- Redes Sociales y Contacto -->
+    <div class="social-links mt-3">
+      <a href="https://wa.me/5491100000000" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+      <a href="https://instagram.com" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+      <a href="https://facebook.com" target="_blank" title="Facebook"><i class="fab fa-facebook"></i></a>
+      <a href="https://tiktok.com" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
     </div>
   </div>
 
-  <div class="controls">
-    <input type="text" id="searchInput" class="search-input" placeholder="Buscar prenda, color o talle...">
-  </div>
-
-  <main class="catalog-grid" id="catalogGrid"></main>
-
-  <div class="modal-overlay" id="bannerModal">
-    <div class="modal">
-      <h2>Cargar Foto de Portada de la Marca</h2>
-      <div class="form-group">
-        <label>Seleccionar Imagen de Banner / Logo</label>
-        <input type="file" id="bannerFileInput" accept="image/*">
-      </div>
-      <img id="bannerPreviewImg" style="width:100%; height:150px; object-fit:cover; border-radius:10px; display:none; border:1px solid var(--border);" alt="Vista previa portada">
-      <div class="modal-actions">
-        <button type="button" class="btn btn-outline" id="btnCancelBanner">Cancelar</button>
-        <button type="button" class="btn btn-primary" id="btnSaveBanner">Guardar Portada</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="productModal">
-    <div class="modal">
-      <h2 id="modalTitle">Cargar Nuevo Producto</h2>
-      <form id="productForm">
-        <input type="hidden" id="editProductId">
-        <div class="form-group">
-          <label>Nombre del Producto</label>
-          <input type="text" id="prodName" required placeholder="Ej. Remera Oversize Algodón">
+  <div class="container mb-5">
+    
+    <!-- Dashboard Financiero Privado (Solo Admin) -->
+    <div id="admin-dashboard" class="card bg-dark text-white mb-4 d-none">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="card-title text-warning mb-0"><i class="fas fa-chart-line me-2"></i> Panel de Control Financiero (Privado)</h5>
+          <button class="btn btn-sm btn-success" onclick="openProductModal()"><i class="fas fa-plus me-1"></i> Nuevo Artículo</button>
         </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Precio ($)</label>
-            <input type="number" id="prodPrice" required placeholder="18000">
+        <div class="row text-center g-3">
+          <div class="col-6 col-md-3">
+            <div class="p-2 border border-secondary rounded">
+              <small class="text-muted d-block">Capital en Stock (Libre)</small>
+              <strong class="fs-5 text-info" id="dash-capital">$0</strong>
+            </div>
           </div>
-          <div class="form-group">
-            <label>Fotos de la Prenda (Múltiples)</label>
-            <input type="file" id="prodFileInput" accept="image/*" multiple>
+          <div class="col-6 col-md-3">
+            <div class="p-2 border border-secondary rounded">
+              <small class="text-muted d-block">Capital Retenido (Reservas)</small>
+              <strong class="fs-5 text-warning" id="dash-reservas">$0</strong>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="p-2 border border-secondary rounded">
+              <small class="text-muted d-block">Ventas Realizadas</small>
+              <strong class="fs-5 text-success" id="dash-ventas">$0</strong>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="p-2 border border-secondary rounded">
+              <small class="text-muted d-block">Ganancia Neta Estimada</small>
+              <strong class="fs-5 text-warning" id="dash-ganancia">$0</strong>
+            </div>
           </div>
         </div>
-        
-        <div id="previewsGrid" class="previews-grid"></div>
+      </div>
+    </div>
 
-        <div class="form-group" style="margin-top: 10px;">
-          <label>Colores (separados por coma)</label>
-          <input type="text" id="prodColores" required placeholder="Ej. Negro, Blanco">
+    <!-- Controles de Filtros y Búsqueda -->
+    <div class="row g-2 mb-4 align-items-center">
+      <div class="col-12 col-md-4">
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-search"></i></span>
+          <input type="text" id="search-input" class="form-control" placeholder="Buscar prenda..." oninput="renderProducts()">
         </div>
-        <div class="form-group">
-          <label>Talles (separados por coma)</label>
-          <input type="text" id="prodTalles" required placeholder="Ej. S, M, L">
-        </div>
-        <div class="form-group" style="display:flex; align-items:center; gap:8px; margin-top:10px;">
-          <input type="checkbox" id="prodVisible" checked style="width:auto;">
-          <label for="prodVisible" style="margin:0;">👁️ Hacer visible para los Clientes en la web pública</label>
-        </div>
-        <button type="button" class="btn btn-outline" id="btnGenerateMatrix" style="width: 100%; margin-top: 8px;">
-          ⚡ Generar Tabla de Cantidades
+      </div>
+      <div class="col-6 col-md-3">
+        <select id="filter-estado" class="form-select" onchange="renderProducts()">
+          <option value="TODOS">Todos los Estados</option>
+          <option value="LIBRE" selected>🟢 Solo Libres / Disponibles</option>
+          <option value="RESERVADO">🟡 Solo Reservados</option>
+          <option value="VENDIDO">🔴 Solo Vendidos</option>
+        </select>
+      </div>
+      <div class="col-6 col-md-3">
+        <select id="filter-ocasion" class="form-select" onchange="renderProducts()">
+          <option value="TODAS">Todas las Ocasiones</option>
+          <option value="Casual / Urbano">Casual / Urbano</option>
+          <option value="Noche / Fiestas">Noche / Fiestas</option>
+          <option value="Primavera / Verano">Primavera / Verano</option>
+          <option value="Otoño / Invierno">Otoño / Invierno</option>
+          <option value="Promos / Liquida">Promos / Liquida</option>
+        </select>
+      </div>
+      <div class="col-12 col-md-2 text-end">
+        <button class="btn btn-outline-dark w-100" onclick="exportPDF()">
+          <i class="fas fa-file-pdf text-danger me-1"></i> Exportar PDF
         </button>
-        <div id="matrixContainer" style="margin-top: 14px;"></div>
-        <div class="modal-actions">
-          <button type="button" class="btn btn-outline" id="btnCancelProduct">Cancelar</button>
-          <button type="submit" class="btn btn-primary" id="btnSaveProduct" style="display: none;">Guardar Producto</button>
-        </div>
-      </form>
+      </div>
     </div>
+
+    <!-- Contenedor Principal de Productos -->
+    <div id="products-container" class="row g-4">
+      <!-- Se carga dinámicamente -->
+    </div>
+
   </div>
 
-  <div class="modal-overlay" id="salesModal">
-    <div class="modal">
-      <h2>Registro de Ventas Realizadas</h2>
-      <ul class="sales-list" id="salesListContainer"></ul>
-      <div class="modal-actions">
-        <button type="button" class="btn btn-danger" id="btnClearSales">Borrar Historial</button>
-        <button type="button" class="btn btn-outline" id="btnCloseSales">Cerrar</button>
+  <!-- Modal Admin Login -->
+  <div class="modal fade" id="modalAdminLogin" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Acceso Administrador</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="password" id="admin-pass-input" class="form-control mb-3" placeholder="Contraseña de Admin">
+          <button class="btn btn-dark w-100" onclick="loginAdmin()">Ingresar</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <div id="pdfExportTemplate" style="display:none; padding:20px; font-family:sans-serif;">
-    <h1 style="text-align:center; color:#0f172a;">MAISHAN INDUMENTARIA & ESTILO</h1>
-    <p style="text-align:center; color:#64748b; margin-bottom:20px;">Catálogo Oficial de Productos</p>
-    <div id="pdfCatalogContent"></div>
+  <!-- Modal Agregar / Editar Producto -->
+  <div class="modal fade" id="modalProduct" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-white">
+          <h5 class="modal-title" id="modalProductTitle">Nuevo Artículo - MAISHAN</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="product-form">
+            <input type="hidden" id="prod-id">
+            
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Nombre del Artículo *</label>
+                <input type="text" id="prod-nombre" class="form-control" required placeholder="Ej. Remera Oversize Noir">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Link de la Imagen (URL / ImgBB) *</label>
+                <input type="url" id="prod-img" class="form-control" required placeholder="https://i.ibb.co/...">
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label">Estado de Stock *</label>
+                <select id="prod-estado" class="form-select">
+                  <option value="LIBRE">🟢 Libre / Disponible</option>
+                  <option value="RESERVADO">🟡 Reservado</option>
+                  <option value="VENDIDO">🔴 Vendido</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Ocasión / Colección</label>
+                <select id="prod-ocasion" class="form-select">
+                  <option value="Casual / Urbano">Casual / Urbano</option>
+                  <option value="Noche / Fiestas">Noche / Fiestas</option>
+                  <option value="Primavera / Verano">Primavera / Verano</option>
+                  <option value="Otoño / Invierno">Otoño / Invierno</option>
+                  <option value="Promos / Liquida">Promos / Liquida</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Cliente / Nota (Si está Reservado)</label>
+                <input type="text" id="prod-nota" class="form-control" placeholder="Ej. Reservado a María p/ Viernes">
+              </div>
+
+              <!-- Finanzas -->
+              <div class="col-md-4">
+                <label class="form-label">Costo Directo ($) *</label>
+                <input type="number" id="prod-costo-directo" class="form-control" required value="0">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Costos Agregados ($)</label>
+                <input type="number" id="prod-costo-agregado" class="form-control" value="0" placeholder="Bolsas, envíos, etc.">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Precio Venta Público ($) *</label>
+                <input type="number" id="prod-precio-venta" class="form-control" required value="0">
+              </div>
+
+              <!-- Desglose por Talles y Colores -->
+              <div class="col-12">
+                <hr>
+                <h6>Desglose de Stock por Talles y Colores</h6>
+                <div class="row g-2">
+                  <div class="col-6 col-md-3">
+                    <label class="form-label text-small">Talle S (Cant. / Colores)</label>
+                    <input type="text" id="prod-talle-s" class="form-control" placeholder="Ej: 2 (Negro, Blanco)">
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <label class="form-label text-small">Talle M (Cant. / Colores)</label>
+                    <input type="text" id="prod-talle-m" class="form-control" placeholder="Ej: 3 (Gris)">
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <label class="form-label text-small">Talle L (Cant. / Colores)</label>
+                    <input type="text" id="prod-talle-l" class="form-control" placeholder="Agotado">
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <label class="form-label text-small">Talle XL (Cant. / Colores)</label>
+                    <input type="text" id="prod-talle-xl" class="form-control" placeholder="Agotado">
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" onclick="saveProduct()">Guardar Cambios</button>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <!-- Template Oculto para Exportar en PDF -->
+  <div id="pdf-template">
+    <div class="pdf-header">
+      <h1 style="margin: 0; font-size: 28px;">MAISHAN</h1>
+      <p style="margin: 0; letter-spacing: 2px;">INDUMENTARIA & ESTILO</p>
+      <p style="margin-top: 5px; font-size: 12px;">CATÁLOGO DE STOCK DISPONIBLE</p>
+    </div>
+    <div id="pdf-content-list" class="row"></div>
+  </div>
+
+  <!-- Bootstrap JS & App Script -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    // CONFIGURACIÓN DE CONEXIÓN A LA NUBE
-    var BIN_ID = "6abafce0ffd5d16053398fa8";
-    var MASTER_KEY = "$2a$10$oA.Tk9hUqu63fQrGnMNL6enO8IElcJyI.QHFGCBTxcaxOz0iyu3vG";
-    var API_URL = "https://api.jsonbin.io/v3/b/" + BIN_ID;
+    // Configuración JSONBin.io & Credenciales
+    const BIN_ID = '6abafce0ffd5d16053398fa8';
+    const MASTER_KEY = '$2a$10$oA.Tk9hUqu63fQrGnMNL6enO8IElcJyI.QHFGCBTxcaxOz0iyu3vG';
+    const ADMIN_PASS = '2468';
 
-    var products = [];
-    var salesRecords = JSON.parse(localStorage.getItem('maishan_sales_records')) || [];
-    var brandBanner = localStorage.getItem('maishan_brand_banner') || '';
-    var isAdmin = false;
-    var currentImagesArray = [];
-    var activeImageIndexes = {};
-    var currentBannerBase64 = '';
+    let products = [];
+    let isAdmin = false;
 
-    if (brandBanner) {
-      document.getElementById('bannerImg').src = brandBanner;
-    }
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', () => {
+      loadDataFromCloud();
+    });
 
-    // Cargar datos desde la nube al abrir la página
-    function fetchProductsFromCloud() {
-      var statusEl = document.getElementById('syncStatus');
-      statusEl.style.display = 'block';
-      statusEl.innerText = '🔄 Actualizando prendas en vivo...';
-
-      fetch(API_URL + "/latest", {
-        headers: { "X-Master-Key": MASTER_KEY }
-      })
-      .then(function(res) { return res.json(); })
-      .then(function(data) {
-        if (Array.isArray(data.record)) {
-          products = data.record;
-        } else {
-          products = [];
-        }
-        statusEl.style.display = 'none';
-        renderCatalog();
-        updateFinances();
-      })
-      .catch(function(err) {
-        console.error(err);
-        statusEl.innerText = '⚠️ Error al conectar con la nube. Mostrando catálogo local.';
-        setTimeout(function() { statusEl.style.display = 'none'; }, 3000);
-      });
-    }
-
-    // Guardar datos en la nube al hacer cambios
-    function saveProducts() {
-      var statusEl = document.getElementById('syncStatus');
-      statusEl.style.display = 'block';
-      statusEl.innerText = '☁️ Guardando cambios en la nube...';
-
-      fetch(API_URL, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Master-Key": MASTER_KEY
-        },
-        body: JSON.stringify(products)
-      })
-      .then(function(res) { return res.json(); })
-      .then(function(data) {
-        statusEl.style.background = '#dcfce7';
-        statusEl.style.color = '#166534';
-        statusEl.innerText = '✅ ¡Guardado en la nube! Todos tus clientes ya ven los cambios.';
-        setTimeout(function() { 
-          statusEl.style.display = 'none'; 
-          statusEl.style.background = '#eff6ff';
-          statusEl.style.color = '#1e40af';
-        }, 2500);
-        renderCatalog();
-        updateFinances();
-      })
-      .catch(function(err) {
-        console.error(err);
-        alert('Hubo un problema al guardar en la nube. Verificá tu conexión.');
-        statusEl.style.display = 'none';
-      });
-
-      localStorage.setItem('maishan_sales_records', JSON.stringify(salesRecords));
-    }
-
-    document.getElementById('prodFileInput').addEventListener('change', function(e) {
-      var files = Array.from(e.target.files);
-      if (files.length > 0) {
-        currentImagesArray = [];
-        var grid = document.getElementById('previewsGrid');
-        grid.innerHTML = '';
-
-        files.forEach(function(file) {
-          var reader = new FileReader();
-          reader.onload = function(evt) {
-            currentImagesArray.push(evt.target.result);
-            var img = document.createElement('img');
-            img.src = evt.target.result;
-            img.className = 'preview-thumb';
-            grid.appendChild(img);
-          };
-          reader.readAsDataURL(file);
+    // Cargar Datos desde JSONBin.io
+    async function loadDataFromCloud() {
+      updateSyncStatus('loading', 'Sincronizando...');
+      try {
+        const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+          headers: { 'X-Master-Key': MASTER_KEY }
         });
-      }
-    });
-
-    document.getElementById('bannerFileInput').addEventListener('change', function(e) {
-      var file = e.target.files[0];
-      if (file) {
-        var reader = new FileReader();
-        reader.onload = function(evt) {
-          currentBannerBase64 = evt.target.result;
-          var preview = document.getElementById('bannerPreviewImg');
-          preview.src = currentBannerBase64;
-          preview.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    function getTotalStock(matrix) {
-      var total = 0;
-      for (var color in matrix) {
-        for (var talle in matrix[color]) {
-          total += parseInt(matrix[color][talle]) || 0;
-        }
-      }
-      return total;
-    }
-
-    function updateFinances() {
-      var totalUnsoldUnits = 0;
-      var totalUnsoldVal = 0;
-
-      products.forEach(function(p) {
-        var stock = getTotalStock(p.stockMatrix);
-        totalUnsoldUnits += stock;
-        totalUnsoldVal += (stock * p.price);
-      });
-
-      var totalSoldUnits = salesRecords.length;
-      var totalRevenue = salesRecords.reduce(function(acc, item) { return acc + item.price; }, 0);
-
-      document.getElementById('valStockTotal').innerText = totalUnsoldUnits + ' u. ($' + totalUnsoldVal.toLocaleString('es-AR') + ')';
-      document.getElementById('valUnitsSold').innerText = totalSoldUnits + ' u.';
-      document.getElementById('valTotalRevenue').innerText = '$' + totalRevenue.toLocaleString('es-AR');
-    }
-
-    document.getElementById('btnChangeBanner').onclick = function() {
-      document.getElementById('bannerModal').classList.add('active');
-    };
-    document.getElementById('btnCancelBanner').onclick = function() {
-      document.getElementById('bannerModal').classList.remove('active');
-    };
-    document.getElementById('btnSaveBanner').onclick = function() {
-      if (currentBannerBase64) {
-        localStorage.setItem('maishan_brand_banner', currentBannerBase64);
-        document.getElementById('bannerImg').src = currentBannerBase64;
-        document.getElementById('bannerModal').classList.remove('active');
-      }
-    };
-
-    window.updateVariantStock = function(prodId, color, talle, change) {
-      var prod = products.find(function(p) { return p.id === prodId; });
-      if (prod && prod.stockMatrix[color] && prod.stockMatrix[color][talle] !== undefined) {
-        var current = parseInt(prod.stockMatrix[color][talle]) || 0;
-        var updated = current + change;
-        if (updated < 0) updated = 0;
-
-        if (change === -1 && current > 0) {
-          salesRecords.push({
-            id: Date.now(),
-            date: new Date().toLocaleString('es-AR'),
-            product: prod.name,
-            color: color,
-            talle: talle,
-            price: prod.price
-          });
-        }
-
-        prod.stockMatrix[color][talle] = updated;
-        saveProducts();
-      }
-    };
-
-    window.toggleVisibility = function(prodId) {
-      var prod = products.find(function(p) { return p.id === prodId; });
-      if (prod) {
-        prod.visible = (prod.visible === false) ? true : false;
-        saveProducts();
-      }
-    };
-
-    window.changeImageIndex = function(prodId, direction) {
-      var prod = products.find(function(p) { return p.id === prodId; });
-      if (prod && prod.imgs && prod.imgs.length > 1) {
-        if (activeImageIndexes[prodId] === undefined) activeImageIndexes[prodId] = 0;
-        activeImageIndexes[prodId] += direction;
-
-        if (activeImageIndexes[prodId] < 0) {
-          activeImageIndexes[prodId] = prod.imgs.length - 1;
-        } else if (activeImageIndexes[prodId] >= prod.imgs.length) {
-          activeImageIndexes[prodId] = 0;
-        }
-
-        document.getElementById('img-' + prodId).src = prod.imgs[activeImageIndexes[prodId]];
-        document.getElementById('counter-' + prodId).innerText = (activeImageIndexes[prodId] + 1) + '/' + prod.imgs.length;
-      }
-    };
-
-    window.orderViaWhatsApp = function(prodName, price) {
-      var msg = 'Hola MAISHAN! Quisiera encargar la prenda: ' + prodName + ' ($' + price.toLocaleString('es-AR') + ')';
-      var url = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(msg);
-      window.open(url, '_blank');
-    };
-
-    document.getElementById('btnShareCatalog').onclick = function() {
-      var catalogURL = window.location.href;
-      var msg = '¡Hola! Te comparto nuestro catálogo virtual de MAISHAN INDUMENTARIA & ESTILO 👇\n' + catalogURL;
-      var url = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(msg);
-      window.open(url, '_blank');
-    };
-
-    document.getElementById('btnToggleAdmin').onclick = function() {
-      if (!isAdmin) {
-        var pass = prompt('Ingresá la clave de Administrador:');
-        if (pass === '2468') {
-          isAdmin = true;
-          document.getElementById('btnToggleAdmin').innerText = '🔓 Salir Admin';
-          document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = 'block'; });
-          renderCatalog();
+        if (res.ok) {
+          const data = await res.json();
+          products = data.record.products || [];
+          renderProducts();
+          updateDashboard();
+          updateSyncStatus('success', 'Sincronizado');
         } else {
-          alert('Contraseña incorrecta');
+          updateSyncStatus('error', 'Error al cargar');
         }
-      } else {
-        isAdmin = false;
-        document.getElementById('btnToggleAdmin').innerText = '🔐 Acceso Admin';
-        document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = 'none'; });
-        renderCatalog();
+      } catch (e) {
+        console.error(e);
+        updateSyncStatus('error', 'Error de conexión');
       }
-    };
+    }
 
-    function renderCatalog() {
-      var grid = document.getElementById('catalogGrid');
-      grid.innerHTML = '';
+    // Guardar Datos en JSONBin.io
+    async function saveDataToCloud() {
+      updateSyncStatus('loading', 'Guardando...');
+      try {
+        const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Master-Key': MASTER_KEY
+          },
+          body: JSON.stringify({ products })
+        });
+        if (res.ok) {
+          updateSyncStatus('success', 'Sincronizado');
+          renderProducts();
+          updateDashboard();
+        } else {
+          updateSyncStatus('error', 'Error al guardar');
+        }
+      } catch (e) {
+        console.error(e);
+        updateSyncStatus('error', 'Error de conexión');
+      }
+    }
 
-      var search = document.getElementById('searchInput').value.toLowerCase();
-      
-      var filtered = products.filter(function(p) {
-        var matchesSearch = p.name ? p.name.toLowerCase().indexOf(search) !== -1 : false;
-        var isVisible = isAdmin ? true : (p.visible !== false);
-        return matchesSearch && isVisible;
+    function updateSyncStatus(type, message) {
+      const el = document.getElementById('sync-status');
+      if (type === 'loading') {
+        el.className = 'badge bg-warning text-dark';
+        el.innerHTML = `<i class="fas fa-spinner fa-spin me-1"></i> ${message}`;
+      } else if (type === 'success') {
+        el.className = 'badge bg-success';
+        el.innerHTML = `<i class="fas fa-check-circle me-1"></i> ${message}`;
+      } else {
+        el.className = 'badge bg-danger';
+        el.innerHTML = `<i class="fas fa-exclamation-triangle me-1"></i> ${message}`;
+      }
+    }
+
+    // Modal Admin Login
+    function toggleAdminModal() {
+      if (isAdmin) {
+        isAdmin = false;
+        document.getElementById('admin-dashboard').classList.add('d-none');
+        document.getElementById('btn-toggle-admin').innerHTML = `<i class="fas fa-lock me-1"></i> Modo Admin`;
+        renderProducts();
+      } else {
+        new bootstrap.Modal(document.getElementById('modalAdminLogin')).show();
+      }
+    }
+
+    function loginAdmin() {
+      const pass = document.getElementById('admin-pass-input').value;
+      if (pass === ADMIN_PASS) {
+        isAdmin = true;
+        document.getElementById('admin-dashboard').classList.remove('d-none');
+        document.getElementById('btn-toggle-admin').innerHTML = `<i class="fas fa-unlock text-warning me-1"></i> Salir Admin`;
+        bootstrap.Modal.getInstance(document.getElementById('modalAdminLogin')).hide();
+        document.getElementById('admin-pass-input').value = '';
+        renderProducts();
+        updateDashboard();
+      } else {
+        alert('Contraseña incorrecta');
+      }
+    }
+
+    // Renderizar Productos
+    function renderProducts() {
+      const container = document.getElementById('products-container');
+      const search = document.getElementById('search-input').value.toLowerCase();
+      const filterEstado = document.getElementById('filter-estado').value;
+      const filterOcasion = document.getElementById('filter-ocasion').value;
+
+      container.innerHTML = '';
+
+      const filtered = products.filter(p => {
+        const matchSearch = p.nombre.toLowerCase().includes(search);
+        const matchEstado = (filterEstado === 'TODOS') || (p.estado === filterEstado);
+        const matchOcasion = (filterOcasion === 'TODAS') || (p.ocasion === filterOcasion);
+        return matchSearch && matchEstado && matchOcasion;
       });
 
       if (filtered.length === 0) {
-        grid.innerHTML = '<div class="empty-state"><p>No hay prendas disponibles en este momento.</p></div>';
+        container.innerHTML = `<div class="col-12 text-center text-muted py-5">
+          <i class="fas fa-box-open fa-3x mb-3"></i>
+          <p>No se encontraron prendas con los filtros seleccionados.</p>
+        </div>`;
         return;
       }
 
-      filtered.forEach(function(p) {
-        var totalStock = getTotalStock(p.stockMatrix);
-        var imagesList = (p.imgs && p.imgs.length > 0) ? p.imgs : [(p.img || 'https://via.placeholder.com/300x230?text=MAISHAN')];
-        var currentIndex = activeImageIndexes[p.id] || 0;
-        
-        var variantsHTML = '';
-        if (p.colores) {
-          p.colores.forEach(function(c) {
-            variantsHTML += '<div class="color-row"><strong>' + c + ':</strong> ';
-            if (p.talles) {
-              p.talles.forEach(function(t) {
-                var cant = p.stockMatrix && p.stockMatrix[c] ? (p.stockMatrix[c][t] || 0) : 0;
-                variantsHTML += '<span class="variant-item">' + t + ': <strong>' + cant + ' u.</strong> ';
-                if (isAdmin) {
-                  variantsHTML += '<button class="stock-btn" onclick="updateVariantStock(' + p.id + ', \'' + c + '\', \'' + t + '\', -1)">-</button> ' +
-                    '<button class="stock-btn" onclick="updateVariantStock(' + p.id + ', \'' + c + '\', \'' + t + '\', 1)">+</button>';
-                }
-                variantsHTML += '</span>';
-              });
-            }
-            variantsHTML += '</div>';
-          });
-        }
+      filtered.forEach(p => {
+        let badgeClass = 'badge-status-libre';
+        if (p.estado === 'RESERVADO') badgeClass = 'badge-status-reservado';
+        if (p.estado === 'VENDIDO') badgeClass = 'badge-status-vendido';
 
-        var galleryHTML = '<div class="gallery-container">' +
-          '<img id="img-' + p.id + '" src="' + imagesList[currentIndex] + '" alt="' + p.name + '" class="product-img">';
-        
-        if (imagesList.length > 1) {
-          galleryHTML += '<button class="nav-btn nav-prev" onclick="changeImageIndex(' + p.id + ', -1)">❮</button>' +
-            '<button class="nav-btn nav-next" onclick="changeImageIndex(' + p.id + ', 1)">❯</button>' +
-            '<span class="img-counter" id="counter-' + p.id + '">' + (currentIndex + 1) + '/' + imagesList.length + '</span>';
-        }
-        galleryHTML += '</div>';
+        const col = document.createElement('div');
+        col.className = 'col-12 col-sm-6 col-md-4 col-lg-3';
+        col.innerHTML = `
+          <div class="card card-product h-100">
+            <div class="position-relative">
+              <img src="${p.img}" class="product-img" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/300x300?text=MAISHAN'">
+              <span class="position-absolute top-0 end-0 badge ${badgeClass} m-2">${p.estado}</span>
+            </div>
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title fs-6 fw-bold mb-1">${p.nombre}</h5>
+              <p class="text-muted small mb-2"><i class="fas fa-tag me-1"></i>${p.ocasion || 'General'}</p>
+              
+              <div class="mb-2">
+                <strong class="fs-5 text-dark">$${Number(p.precioVenta).toLocaleString()}</strong>
+              </div>
 
-        var card = document.createElement('div');
-        card.className = 'product-card';
-        card.innerHTML = galleryHTML +
-          '<div class="product-info">' +
-            '<div class="product-title">' + p.name + '</div>' +
-            '<div class="product-price">$' + Number(p.price).toLocaleString('es-AR') + '</div>' +
-            '<div class="variants-summary">' + variantsHTML + '</div>' +
-            '<div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">' +
-              '<div class="stock-badge ' + (totalStock > 0 ? 'in-stock' : 'out-stock') + '">' +
-                (totalStock > 0 ? 'Disponible (' + totalStock + ' u.)' : 'Agotado') +
-              '</div>' +
-              (!isAdmin ? '<button class="btn btn-whatsapp" style="padding:6px 12px; font-size:0.8rem;" onclick="orderViaWhatsApp(\'' + p.name + '\', ' + p.price + ')">💬 Pedir por WhatsApp</button>' : '') +
-            '</div>' +
-            (isAdmin ? 
-              '<div class="card-actions">' +
-                '<button class="btn ' + (p.visible !== false ? 'btn-whatsapp' : 'btn-outline') + '" onclick="toggleVisibility(' + p.id + ')">' +
-                  (p.visible !== false ? '👁️ Visible para Clientes' : '🙈 Oculto para Clientes') +
-                '</button>' +
-                '<div class="action-row">' +
-                  '<button class="btn btn-warning" style="flex:1;" onclick="editProduct(' + p.id + ')">✏️ Editar</button>' +
-                  '<button class="btn btn-danger" style="flex:1;" onclick="deleteProduct(' + p.id + ')">🗑️ Borrar</button>' +
-                '</div>' +
-              '</div>' : ''
-            ) +
-          '</div>';
-        grid.appendChild(card);
+              <!-- Desglose Talles -->
+              <div class="bg-light p-2 rounded mb-3 small">
+                <div><strong>S:</strong> ${p.talleS || 'Agotado'}</div>
+                <div><strong>M:</strong> ${p.talleM || 'Agotado'}</div>
+                <div><strong>L:</strong> ${p.talleL || 'Agotado'}</div>
+                <div><strong>XL:</strong> ${p.talleXL || 'Agotado'}</div>
+              </div>
+
+              ${p.nota ? `<p class="text-warning small mb-2"><i class="fas fa-sticky-note me-1"></i>${p.nota}</p>` : ''}
+
+              <div class="mt-auto">
+                <button class="btn btn-success btn-sm w-100 mb-2" onclick="sendWhatsAppQuick('${p.id}')">
+                  <i class="fab fa-whatsapp me-1"></i> Responder Stock (1 Clic)
+                </button>
+
+                ${isAdmin ? `
+                  <div class="d-flex gap-1">
+                    <button class="btn btn-outline-primary btn-sm flex-fill" onclick="editProduct('${p.id}')"><i class="fas fa-edit"></i> Editar</button>
+                    <button class="btn btn-outline-danger btn-sm" onclick="deleteProduct('${p.id}')"><i class="fas fa-trash"></i></button>
+                  </div>
+                ` : ''}
+              </div>
+
+            </div>
+          </div>
+        `;
+        container.appendChild(col);
       });
     }
 
-    document.getElementById('btnViewSalesHistory').onclick = function() {
-      var container = document.getElementById('salesListContainer');
-      container.innerHTML = '';
+    // Respuesta Rápida WhatsApp en 1 Clic
+    function sendWhatsAppQuick(id) {
+      const p = products.find(prod => prod.id === id);
+      if (!p) return;
 
-      if (salesRecords.length === 0) {
-        container.innerHTML = '<li class="sales-item">No hay ventas registradas aún.</li>';
-      } else {
-        salesRecords.slice().reverse().forEach(function(s) {
-          var li = document.createElement('li');
-          li.className = 'sales-item';
-          li.innerHTML = '<div><strong>' + s.product + '</strong> (' + s.color + ' / ' + s.talle + ')<br><small style="color:#64748b;">' + s.date + '</small></div>' +
-            '<strong style="color:#2563eb;">$' + s.price.toLocaleString('es-AR') + '</strong>';
-          container.appendChild(li);
-        });
-      }
+      let msg = `*MAISHAN - INDUMENTARIA & ESTILO*\n`;
+      msg += `📌 *Producto:* ${p.nombre}\n`;
+      msg += `💰 *Precio:* $${Number(p.precioVenta).toLocaleString()}\n\n`;
+      msg += `📦 *STOCK Y DISPONIBILIDAD HOY:*\n`;
+      msg += `▫️ *Talle S:* ${p.talleS ? '✅ ' + p.talleS : '❌ Agotado'}\n`;
+      msg += `▫️ *Talle M:* ${p.talleM ? '✅ ' + p.talleM : '❌ Agotado'}\n`;
+      msg += `▫️ *Talle L:* ${p.talleL ? '✅ ' + p.talleL : '❌ Agotado'}\n`;
+      msg += `▫️ *Talle XL:* ${p.talleXL ? '✅ ' + p.talleXL : '❌ Agotado'}\n\n`;
+      msg += `🖼️ *Ver Foto:* ${p.img}\n`;
+      msg += `⚡ *¡Quedan pocas unidades! Indicame talle y color para reservártelo ahora.*`;
 
-      document.getElementById('salesModal').classList.add('active');
-    };
+      const encoded = encodeURIComponent(msg);
+      window.open(`https://wa.me/?text=${encoded}`, '_blank');
+    }
 
-    document.getElementById('btnCloseSales').onclick = function() {
-      document.getElementById('salesModal').classList.remove('active');
-    };
+    // Dashboard Financiero
+    function updateDashboard() {
+      let capital = 0;
+      let reservas = 0;
+      let ventas = 0;
+      let ganancia = 0;
 
-    document.getElementById('btnClearSales').onclick = function() {
-      if (confirm('¿Vaciar todo el historial de ventas?')) {
-        salesRecords = [];
-        saveProducts();
-        document.getElementById('salesModal').classList.remove('active');
-      }
-    };
+      products.forEach(p => {
+        const costoTotal = (Number(p.costoDirecto) || 0) + (Number(p.costoAgregado) || 0);
+        const precioVenta = Number(p.precioVenta) || 0;
+        const margen = precioVenta - costoTotal;
 
-    window.editProduct = function(id) {
-      var prod = products.find(function(p) { return p.id === id; });
-      if (!prod) return;
-
-      document.getElementById('editProductId').value = prod.id;
-      document.getElementById('prodName').value = prod.name;
-      document.getElementById('prodPrice').value = prod.price;
-      document.getElementById('prodColores').value = prod.colores ? prod.colores.join(', ') : '';
-      document.getElementById('prodTalles').value = prod.talles ? prod.talles.join(', ') : '';
-      document.getElementById('prodVisible').checked = (prod.visible !== false);
-      document.getElementById('modalTitle').innerText = 'Editar Producto';
-
-      var grid = document.getElementById('previewsGrid');
-      grid.innerHTML = '';
-      currentImagesArray = prod.imgs || (prod.img ? [prod.img] : []);
-
-      currentImagesArray.forEach(function(imgSrc) {
-        var img = document.createElement('img');
-        img.src = imgSrc;
-        img.className = 'preview-thumb';
-        grid.appendChild(img);
+        if (p.estado === 'LIBRE') {
+          capital += costoTotal;
+        } else if (p.estado === 'RESERVADO') {
+          reservas += costoTotal;
+        } else if (p.estado === 'VENDIDO') {
+          ventas += precioVenta;
+          ganancia += margen;
+        }
       });
 
-      document.getElementById('btnGenerateMatrix').click();
+      document.getElementById('dash-capital').innerText = `$${capital.toLocaleString()}`;
+      document.getElementById('dash-reservas').innerText = `$${reservas.toLocaleString()}`;
+      document.getElementById('dash-ventas').innerText = `$${ventas.toLocaleString()}`;
+      document.getElementById('dash-ganancia').innerText = `$${ganancia.toLocaleString()}`;
+    }
 
-      setTimeout(function() {
-        document.querySelectorAll('.matrix-input').forEach(function(input) {
-          var color = input.getAttribute('data-color');
-          var talle = input.getAttribute('data-talle');
-          if (prod.stockMatrix && prod.stockMatrix[color] && prod.stockMatrix[color][talle] !== undefined) {
-            input.value = prod.stockMatrix[color][talle];
-          }
-        });
-      }, 100);
+    // Modal Crear / Editar
+    function openProductModal() {
+      document.getElementById('product-form').reset();
+      document.getElementById('prod-id').value = '';
+      document.getElementById('modalProductTitle').innerText = 'Nuevo Artículo - MAISHAN';
+      new bootstrap.Modal(document.getElementById('modalProduct')).show();
+    }
 
-      document.getElementById('productModal').classList.add('active');
-    };
+    function editProduct(id) {
+      const p = products.find(item => item.id === id);
+      if (!p) return;
 
-    window.deleteProduct = function(id) {
-      if (confirm('¿Eliminar esta prenda del catálogo?')) {
-        products = products.filter(function(p) { return p.id !== id; });
-        saveProducts();
-      }
-    };
+      document.getElementById('prod-id').value = p.id;
+      document.getElementById('prod-nombre').value = p.nombre;
+      document.getElementById('prod-img').value = p.img;
+      document.getElementById('prod-estado').value = p.estado;
+      document.getElementById('prod-ocasion').value = p.ocasion || 'Casual / Urbano';
+      document.getElementById('prod-nota').value = p.nota || '';
+      document.getElementById('prod-costo-directo').value = p.costoDirecto || 0;
+      document.getElementById('prod-costo-agregado').value = p.costoAgregado || 0;
+      document.getElementById('prod-precio-venta').value = p.precioVenta || 0;
+      document.getElementById('prod-talle-s').value = p.talleS || '';
+      document.getElementById('prod-talle-m').value = p.talleM || '';
+      document.getElementById('prod-talle-l').value = p.talleL || '';
+      document.getElementById('prod-talle-xl').value = p.talleXL || '';
 
-    document.getElementById('btnPrintPDF').onclick = function() {
-      var content = document.getElementById('pdfCatalogContent');
-      content.innerHTML = '';
+      document.getElementById('modalProductTitle').innerText = 'Editar Artículo - MAISHAN';
+      new bootstrap.Modal(document.getElementById('modalProduct')).show();
+    }
 
-      products.forEach(function(p) {
-        var firstImg = (p.imgs && p.imgs.length > 0) ? p.imgs[0] : (p.img || 'https://via.placeholder.com/80');
-        var item = document.createElement('div');
-        item.style.cssText = 'border-bottom: 1px solid #ccc; padding: 10px 0; display:flex; gap:15px; align-items:center;';
-        item.innerHTML = 
-          '<img src="' + firstImg + '" style="width:80px; height:80px; object-fit:cover; border-radius:6px;">' +
-          '<div>' +
-            '<h3 style="margin:0;">' + p.name + '</h3>' +
-            '<p style="margin:4px 0; font-weight:bold; color:#2563eb;">$' + p.price.toLocaleString('es-AR') + '</p>' +
-            '<small>Colores: ' + (p.colores ? p.colores.join(', ') : '') + ' | Talles: ' + (p.talles ? p.talles.join(', ') : '') + '</small>' +
-          '</div>';
-        content.appendChild(item);
-      });
+    function saveProduct() {
+      const id = document.getElementById('prod-id').value;
+      const nombre = document.getElementById('prod-nombre').value;
+      const img = document.getElementById('prod-img').value;
 
-      var template = document.getElementById('pdfExportTemplate');
-      template.style.display = 'block';
-
-      var opt = {
-        margin: 10,
-        filename: 'Catalogo_MAISHAN.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-
-      html2pdf().set(opt).from(template).save().then(function() {
-        template.style.display = 'none';
-      });
-    };
-
-    document.getElementById('btnGenerateMatrix').onclick = function() {
-      var coloresRaw = document.getElementById('prodColores').value;
-      var tallesRaw = document.getElementById('prodTalles').value;
-
-      if (!coloresRaw || !tallesRaw) {
-        alert('Ingresá los colores y talles separados por coma.');
+      if (!nombre || !img) {
+        alert('Por favor complete el nombre y la URL de la imagen.');
         return;
       }
 
-      var colores = coloresRaw.split(',').map(function(c) { return c.trim(); }).filter(Boolean);
-      var talles = tallesRaw.split(',').map(function(t) { return t.trim(); }).filter(Boolean);
+      const productData = {
+        id: id || 'prod_' + Date.now(),
+        nombre: nombre,
+        img: img,
+        estado: document.getElementById('prod-estado').value,
+        ocasion: document.getElementById('prod-ocasion').value,
+        nota: document.getElementById('prod-nota').value,
+        costoDirecto: Number(document.getElementById('prod-costo-directo').value) || 0,
+        costoAgregado: Number(document.getElementById('prod-costo-agregado').value) || 0,
+        precioVenta: Number(document.getElementById('prod-precio-venta').value) || 0,
+        talleS: document.getElementById('prod-talle-s').value,
+        talleM: document.getElementById('prod-talle-m').value,
+        talleL: document.getElementById('prod-talle-l').value,
+        talleXL: document.getElementById('prod-talle-xl').value
+      };
 
-      var tableHTML = '<table class="matrix-table"><thead><tr><th>Color / Talle</th>';
-      talles.forEach(function(t) { tableHTML += '<th>' + t + '</th>'; });
-      tableHTML += '</tr></thead><tbody>';
-
-      colores.forEach(function(c) {
-        tableHTML += '<tr><td><strong>' + c + '</strong></td>';
-        talles.forEach(function(t) {
-          tableHTML += '<td><input type="number" min="0" value="0" data-color="' + c + '" data-talle="' + t + '" class="matrix-input"></td>';
-        });
-        tableHTML += '</tr>';
-      });
-
-      tableHTML += '</tbody></table>';
-      document.getElementById('matrixContainer').innerHTML = tableHTML;
-      document.getElementById('btnSaveProduct').style.display = 'inline-block';
-    };
-
-    var productModal = document.getElementById('productModal');
-    document.getElementById('btnAdd').onclick = function() {
-      document.getElementById('productForm').reset();
-      document.getElementById('editProductId').value = '';
-      document.getElementById('prodVisible').checked = true;
-      document.getElementById('modalTitle').innerText = 'Cargar Nuevo Producto';
-      document.getElementById('matrixContainer').innerHTML = '';
-      document.getElementById('previewsGrid').innerHTML = '';
-      document.getElementById('btnSaveProduct').style.display = 'none';
-      currentImagesArray = [];
-      productModal.classList.add('active');
-    };
-
-    document.getElementById('btnCancelProduct').onclick = function() {
-      productModal.classList.remove('active');
-    };
-
-    document.getElementById('productForm').onsubmit = function(e) {
-      e.preventDefault();
-      
-      var editId = document.getElementById('editProductId').value;
-      var colores = document.getElementById('prodColores').value.split(',').map(function(c) { return c.trim(); }).filter(Boolean);
-      var talles = document.getElementById('prodTalles').value.split(',').map(function(t) { return t.trim(); }).filter(Boolean);
-      var visible = document.getElementById('prodVisible').checked;
-
-      var stockMatrix = {};
-      colores.forEach(function(c) { stockMatrix[c] = {}; });
-
-      document.querySelectorAll('.matrix-input').forEach(function(input) {
-        var color = input.getAttribute('data-color');
-        var talle = input.getAttribute('data-talle');
-        var cant = parseInt(input.value) || 0;
-        stockMatrix[color][talle] = cant;
-      });
-
-      if (editId) {
-        var prod = products.find(function(p) { return p.id == editId; });
-        if (prod) {
-          prod.name = document.getElementById('prodName').value;
-          prod.price = parseFloat(document.getElementById('prodPrice').value);
-          if (currentImagesArray.length > 0) prod.imgs = currentImagesArray;
-          prod.colores = colores;
-          prod.talles = talles;
-          prod.stockMatrix = stockMatrix;
-          prod.visible = visible;
-        }
+      if (id) {
+        const index = products.findIndex(p => p.id === id);
+        if (index !== -1) products[index] = productData;
       } else {
-        var newProd = {
-          id: Date.now(),
-          name: document.getElementById('prodName').value,
-          price: parseFloat(document.getElementById('prodPrice').value),
-          imgs: currentImagesArray,
-          colores: colores,
-          talles: talles,
-          stockMatrix: stockMatrix,
-          visible: visible
-        };
-        products.push(newProd);
+        products.push(productData);
       }
 
-      saveProducts();
-      productModal.classList.remove('active');
-    };
+      bootstrap.Modal.getInstance(document.getElementById('modalProduct')).hide();
+      saveDataToCloud();
+    }
 
-    document.getElementById('searchInput').oninput = renderCatalog;
+    function deleteProduct(id) {
+      if (confirm('¿Seguro que deseas eliminar este artículo?')) {
+        products = products.filter(p => p.id !== id);
+        saveDataToCloud();
+      }
+    }
 
-    // Iniciar app consultando la nube
-    fetchProductsFromCloud();
+    // Exportar Catálogo PDF (Solo Disponibles)
+    function exportPDF() {
+      const pdfList = document.getElementById('pdf-content-list');
+      pdfList.innerHTML = '';
+
+      const disponibles = products.filter(p => p.estado === 'LIBRE');
+
+      if (disponibles.length === 0) {
+        alert('No hay productos en estado Libre / Disponible para exportar.');
+        return;
+      }
+
+      disponibles.forEach(p => {
+        const div = document.createElement('div');
+        div.style.width = '48%';
+        div.style.display = 'inline-block';
+        div.style.marginBottom = '20px';
+        div.style.verticalAlign = 'top';
+        div.style.boxSizing = 'border-box';
+        div.style.padding = '10px';
+        div.style.border = '1px solid #ddd';
+
+        div.innerHTML = `
+          <img src="${p.img}" style="width: 100%; height: 180px; object-fit: cover; margin-bottom: 8px;">
+          <h4 style="margin: 0 0 5px 0; font-size: 14px;">${p.nombre}</h4>
+          <p style="margin: 0 0 5px 0; font-weight: bold; font-size: 16px;">$${Number(p.precioVenta).toLocaleString()}</p>
+          <div style="font-size: 10px; color: #555;">
+            <div>S: ${p.talleS || '-'} | M: ${p.talleM || '-'}</div>
+            <div>L: ${p.talleL || '-'} | XL: ${p.talleXL || '-'}</div>
+          </div>
+        `;
+        pdfList.appendChild(div);
+      });
+
+      const element = document.getElementById('pdf-template');
+      element.style.display = 'block';
+
+      const opt = {
+        margin:       0.5,
+        filename:     'MAISHAN_Stock_Disponible.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(element).save().then(() => {
+        element.style.display = 'none';
+      });
+    }
   </script>
 </body>
 </html>
