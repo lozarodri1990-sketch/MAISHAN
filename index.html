@@ -139,11 +139,11 @@
   <div class="bg-dark text-white py-1 px-3 d-flex justify-content-between align-items-center" style="font-size: 0.85rem;">
     <div>
       <span id="sync-status" class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Sincronizado</span>
-      <span class="ms-2 d-none d-sm-inline text-muted">JSONBin.io Sync Activo</span>
+      <span class="ms-2 d-none d-sm-inline text-muted">JSONBin.io Nube Multidispositivo</span>
     </div>
     <div>
       <button class="btn btn-sm btn-outline-light py-0" onclick="loadDataFromCloud()">
-        <i class="fas fa-sync-alt me-1"></i> Actualizar
+        <i class="fas fa-sync-alt me-1"></i> Sincronizar
       </button>
       <button id="btn-config" class="btn btn-sm btn-outline-info py-0 ms-1 d-none" onclick="openConfigModal()">
         <i class="fas fa-cog"></i> Config
@@ -397,14 +397,14 @@
   <!-- Template Oculto para Exportar en PDF -->
   <div id="pdf-template">
     <div class="pdf-header">
-      <h1 style="margin: 0; font-size: 28px;">MAISHAN</h1>
-      <p style="margin: 0; letter-spacing: 2px;">INDUMENTARIA & ESTILO</p>
-      <p style="margin-top: 5px; font-size: 12px;">CATÁLOGO DE STOCK DISPONIBLE</p>
+      <h1 style="margin: 0; font-size: 26px; font-weight: bold; letter-spacing: 2px;">MAISHAN</h1>
+      <p style="margin: 0; letter-spacing: 2px; color: #d4af37; font-weight: bold; font-size: 13px;">INDUMENTARIA & ESTILO</p>
+      <p style="margin-top: 5px; font-size: 12px; font-weight: bold;">CATÁLOGO OFICIAL DE STOCK DISPONIBLE</p>
       <p style="margin-top: 2px; font-size: 10px; color: #555;">
         Instagram: @maishan_ind.official | TikTok: @maishan_ind.official
       </p>
     </div>
-    <div id="pdf-content-list" class="row"></div>
+    <div id="pdf-content-list" style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: space-between;"></div>
   </div>
 
   <!-- Bootstrap JS & App Script -->
@@ -494,26 +494,26 @@
     async function loadDataFromCloud() {
       updateSyncStatus('loading', 'Sincronizando...');
       try {
-        const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-          headers: { 'X-Master-Key': MASTER_KEY }
+        const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest?t=${Date.now()}`, {
+          headers: { 
+            'X-Master-Key': MASTER_KEY,
+            'Cache-Control': 'no-cache'
+          }
         });
         if (res.ok) {
           const data = await res.json();
           if (data.record && Array.isArray(data.record.products)) {
-            // Solo sobreescribir si la nube trae datos válidos
-            if (data.record.products.length >= products.length) {
-              products = data.record.products;
-              localStorage.setItem('maishan_local_products', JSON.stringify(products));
-            }
+            products = data.record.products;
+            localStorage.setItem('maishan_local_products', JSON.stringify(products));
           }
           renderProducts();
           updateDashboard();
           updateSyncStatus('success', 'Sincronizado');
         } else {
-          updateSyncStatus('success', 'Modo Local Activo');
+          updateSyncStatus('success', 'Modo Local');
         }
       } catch (e) {
-        updateSyncStatus('success', 'Modo Local Activo');
+        updateSyncStatus('success', 'Modo Local');
       }
     }
 
@@ -522,7 +522,7 @@
       renderProducts();
       updateDashboard();
 
-      updateSyncStatus('loading', 'Guardando...');
+      updateSyncStatus('loading', 'Guardando en Nube...');
       try {
         const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
           method: 'PUT',
@@ -533,12 +533,14 @@
           body: JSON.stringify({ products })
         });
         if (res.ok) {
-          updateSyncStatus('success', 'Guardado en Nube');
+          updateSyncStatus('success', 'Sincronizado en Nube');
         } else {
-          updateSyncStatus('success', 'Guardado Localmente');
+          const errData = await res.json().catch(() => ({}));
+          alert('Guardado localmente. Error al subir a nube: ' + (errData.message || 'Error'));
+          updateSyncStatus('error', 'Error Nube (Guardado Local)');
         }
       } catch (e) {
-        updateSyncStatus('success', 'Guardado Localmente');
+        updateSyncStatus('error', 'Sin red (Guardado Local)');
       }
     }
 
@@ -556,7 +558,6 @@
       }
     }
 
-    // Genera celda con botones + y - para cada talle
     function createQtyCellHTML(sizeClass, val) {
       return `
         <td>
@@ -569,7 +570,6 @@
       `;
     }
 
-    // Funciones de Matriz en Modal (XS a XXL)
     function addMatrixRow(colorName = '', xs = 0, s = 0, m = 0, l = 0, xl = 0, xxl = 0) {
       const tbody = document.getElementById('matrix-tbody');
       const tr = document.createElement('tr');
@@ -586,7 +586,6 @@
       tbody.appendChild(tr);
     }
 
-    // Compresión ultra liviana para acelerar guardado
     function processImage(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -598,7 +597,7 @@
           const canvas = document.createElement('canvas');
           let width = img.width;
           let height = img.height;
-          const maxDim = 350; // Resolución liviana para guardar al instante
+          const maxDim = 320;
 
           if (width > height) {
             if (width > maxDim) { height *= maxDim / width; width = maxDim; }
@@ -885,6 +884,7 @@
       }
     }
 
+    /* EXPORTACIÓN A PDF CON TABLA DETALLADA DE STOCK POR COLOR Y TALLE */
     function exportPDF() {
       const pdfList = document.getElementById('pdf-content-list');
       pdfList.innerHTML = '';
@@ -900,24 +900,73 @@
         const div = document.createElement('div');
         div.style.width = '48%';
         div.style.display = 'inline-block';
-        div.style.marginBottom = '20px';
+        div.style.marginBottom = '15px';
         div.style.verticalAlign = 'top';
         div.style.boxSizing = 'border-box';
-        div.style.padding = '10px';
-        div.style.border = '1px solid #ddd';
+        div.style.padding = '8px';
+        div.style.border = '1px solid #ccc';
+        div.style.borderRadius = '6px';
+        div.style.backgroundColor = '#fff';
 
-        let matrixText = '';
-        if (p.matrizStock) {
+        let matrixRows = '';
+        if (p.matrizStock && p.matrizStock.length > 0) {
           p.matrizStock.forEach(m => {
-            matrixText += `<div><strong>${m.color}:</strong> XS:${m.xs||0} S:${m.s||0} M:${m.m||0} L:${m.l||0} XL:${m.xl||0} XXL:${m.xxl||0}</div>`;
+            matrixRows += `
+              <tr style="border-bottom: 1px solid #eee;">
+                <td style="text-align: left; font-weight: bold; padding: 2px 4px;">${m.color}</td>
+                <td style="padding: 2px;">${m.xs || 0}</td>
+                <td style="padding: 2px;">${m.s || 0}</td>
+                <td style="padding: 2px;">${m.m || 0}</td>
+                <td style="padding: 2px;">${m.l || 0}</td>
+                <td style="padding: 2px;">${m.xl || 0}</td>
+                <td style="padding: 2px;">${m.xxl || 0}</td>
+              </tr>
+            `;
           });
+        } else {
+          const sS = p.stockS ? p.stockS.qty : 0;
+          const sM = p.stockM ? p.stockM.qty : 0;
+          const sL = p.stockL ? p.stockL.qty : 0;
+          const sXL = p.stockXL ? p.stockXL.qty : 0;
+          const sXXL = p.stockXXL ? p.stockXXL.qty : 0;
+          const colorText = (p.stockS && p.stockS.color) || 'General';
+          matrixRows = `
+            <tr>
+              <td style="text-align: left; font-weight: bold; padding: 2px 4px;">${colorText}</td>
+              <td style="padding: 2px;">0</td>
+              <td style="padding: 2px;">${sS}</td>
+              <td style="padding: 2px;">${sM}</td>
+              <td style="padding: 2px;">${sL}</td>
+              <td style="padding: 2px;">${sXL}</td>
+              <td style="padding: 2px;">${sXXL}</td>
+            </tr>
+          `;
         }
 
+        const tableHTML = `
+          <table style="width: 100%; border-collapse: collapse; font-size: 9px; text-align: center; margin-top: 4px;">
+            <thead>
+              <tr style="background: #1a1a1a; color: #fff;">
+                <th style="text-align: left; padding: 3px 4px;">Color</th>
+                <th style="padding: 3px 2px;">XS</th>
+                <th style="padding: 3px 2px;">S</th>
+                <th style="padding: 3px 2px;">M</th>
+                <th style="padding: 3px 2px;">L</th>
+                <th style="padding: 3px 2px;">XL</th>
+                <th style="padding: 3px 2px;">XXL</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${matrixRows}
+            </tbody>
+          </table>
+        `;
+
         div.innerHTML = `
-          <img src="${p.img || 'https://via.placeholder.com/300x300'}" style="width: 100%; height: 180px; object-fit: cover; margin-bottom: 8px;">
-          <h4 style="margin: 0 0 5px 0; font-size: 14px;">${p.nombre}</h4>
-          <p style="margin: 0 0 5px 0; font-weight: bold; font-size: 16px;">$${Number(p.precioVenta).toLocaleString()}</p>
-          <div style="font-size: 10px; color: #555;">${matrixText}</div>
+          <img src="${p.img || 'https://via.placeholder.com/300x300'}" style="width: 100%; height: 160px; object-fit: cover; border-radius: 4px; margin-bottom: 6px;">
+          <h4 style="margin: 0 0 2px 0; font-size: 13px; font-weight: bold; color: #1a1a1a;">${p.nombre}</h4>
+          <p style="margin: 0 0 4px 0; font-weight: bold; font-size: 14px; color: #d4af37;">$${Number(p.precioVenta).toLocaleString()}</p>
+          <div style="font-size: 10px; color: #333;">${tableHTML}</div>
         `;
         pdfList.appendChild(div);
       });
@@ -926,10 +975,10 @@
       element.style.display = 'block';
 
       const opt = {
-        margin:       0.5,
+        margin:       [0.3, 0.3, 0.3, 0.3],
         filename:     'MAISHAN_Stock_Disponible.pdf',
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
+        html2canvas:  { scale: 2, useCORS: true, logging: false },
         jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
       };
 
