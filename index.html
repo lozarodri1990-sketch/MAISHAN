@@ -127,13 +127,10 @@
   <!-- Top Sync & Admin Bar -->
   <div class="bg-dark text-white py-1 px-3 d-flex justify-content-between align-items-center" style="font-size: 0.85rem;">
     <div>
-      <span id="sync-status" class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Sincronizado</span>
-      <span class="ms-2 d-none d-sm-inline text-muted">JSONBin.io Nube Multidispositivo</span>
+      <span id="sync-status" class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Conectado a Firestore</span>
+      <span class="ms-2 d-none d-sm-inline text-muted">Sincronización en Tiempo Real</span>
     </div>
     <div>
-      <button class="btn btn-sm btn-outline-light py-0" onclick="loadDataFromCloud()">
-        <i class="fas fa-sync-alt me-1"></i> Sincronizar
-      </button>
       <button id="btn-config" class="btn btn-sm btn-outline-info py-0 ms-1 d-none" onclick="openConfigModal()">
         <i class="fas fa-cog"></i> Config
       </button>
@@ -157,7 +154,7 @@
 
   <div class="container mb-5">
     
-    <!-- Dashboard Financiero -->
+    <!-- Dashboard Financiero Privado (Solo Admin) -->
     <div id="admin-dashboard" class="card bg-dark text-white mb-4 d-none">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -201,7 +198,7 @@
       </div>
     </div>
 
-    <!-- Filtros de Búsqueda -->
+    <!-- Controles de Filtros -->
     <div class="row g-2 mb-4 align-items-center">
       <div class="col-12 col-md-4">
         <div class="input-group">
@@ -293,9 +290,9 @@
                 <label class="form-label fw-bold">Foto de la Prenda *</label>
                 <div class="upload-box mb-1" onclick="document.getElementById('prod-img-file').click()">
                   <i class="fas fa-camera fa-lg text-primary mb-1"></i>
-                  <div class="small text-dark fw-bold" id="upload-status-text">Tocar para Cámara o Galería</div>
+                  <div class="small text-dark fw-bold" id="upload-status-text">Tocar para Galería o Cámara</div>
                 </div>
-                <input type="file" id="prod-img-file" class="d-none" accept="image/*" onchange="processImage(event)">
+                <input type="file" id="prod-img-file" class="d-none" accept="image/*" onchange="processAndCompressImage(event)">
                 <input type="hidden" id="prod-img-base64">
                 <div class="text-center mt-2">
                   <img id="img-preview" src="" style="max-height: 80px; display: none;" class="img-thumbnail">
@@ -389,13 +386,30 @@
     <div id="pdf-content-list" style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: space-between;"></div>
   </div>
 
+  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-  <script>
-    const BIN_ID = '6abafce0ffd5d16053398fa8';
-    const MASTER_KEY = '$2a$10$oA.Tk9hUqu63fQrGnMNL6enO8IElcJyI.QHFGCBTxcaxOz0iyu3vG';
-    const ADMIN_PASS = '2468';
+  <!-- LIBRERÍAS DE FIREBASE (Únicamente Firestore, 100% Gratuito) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
+  <script>
+    // Configuración oficial conectada a tu proyecto MAISHAN
+    const firebaseConfig = {
+      apiKey: "AIzaSyATXgM3fdRKPLl6KXkH0zTSan7UdkuIJ0Q",
+      authDomain: "maishan-752b7.firebaseapp.com",
+      projectId: "maishan-752b7",
+      storageBucket: "maishan-752b7.firebasestorage.app",
+      messagingSenderId: "834945298426",
+      appId: "1:834945298426:web:a3ccc8d4dd37123cf67e43",
+      measurementId: "G-TJPL86P2H4"
+    };
+
+    // Inicialización de Firestore
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const ADMIN_PASS = '2468';
     let products = [];
     let isAdmin = false;
     let configWhatsApp = '';
@@ -406,15 +420,20 @@
       }
       configWhatsApp = localStorage.getItem('maishan_ws') || '';
       renderWhatsAppHeader();
-      
-      const localData = localStorage.getItem('maishan_local_products');
-      if (localData) {
-        try { products = JSON.parse(localData); } catch(e){}
-      }
-      renderProducts();
-      updateDashboard();
-      
-      loadDataFromCloud();
+
+      // Escuchador en TIEMPO REAL con Firestore
+      db.collection("productos").onSnapshot((snapshot) => {
+        products = [];
+        snapshot.forEach((doc) => {
+          products.push({ id: doc.id, ...doc.data() });
+        });
+        renderProducts();
+        updateDashboard();
+        updateSyncStatus('success', 'Sincronizado en Tiempo Real');
+      }, (error) => {
+        console.error("Error en Firestore: ", error);
+        updateSyncStatus('error', 'Error de Conexión');
+      });
     });
 
     function enableAdminMode() {
@@ -472,69 +491,6 @@
       }
     }
 
-    // SINCRONIZACIÓN CON FUSIÓN INTELIGENTE (Pauta Anti-Pérdida de Datos)
-    async function loadDataFromCloud() {
-      updateSyncStatus('loading', 'Sincronizando...');
-      try {
-        const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest?t=${Date.now()}`, {
-          headers: { 
-            'X-Master-Key': MASTER_KEY,
-            'Cache-Control': 'no-cache'
-          }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.record && Array.isArray(data.record.products)) {
-            const cloudProducts = data.record.products;
-            
-            // Fusión: Preserva artículos creados localmente que aún no llegaron a la nube
-            const cloudIds = new Set(cloudProducts.map(p => p.id));
-            const unsyncedLocal = products.filter(p => !cloudIds.has(p.id));
-            
-            products = [...cloudProducts, ...unsyncedLocal];
-            localStorage.setItem('maishan_local_products', JSON.stringify(products));
-
-            // Si quedaron artículos sin subir, los reintenta enviar a la nube automáticamente
-            if (unsyncedLocal.length > 0) {
-              saveDataToCloud();
-            }
-          }
-          renderProducts();
-          updateDashboard();
-          updateSyncStatus('success', 'Sincronizado');
-        } else {
-          updateSyncStatus('success', 'Modo Local Activo');
-        }
-      } catch (e) {
-        updateSyncStatus('success', 'Modo Local Activo');
-      }
-    }
-
-    async function saveDataToCloud() {
-      localStorage.setItem('maishan_local_products', JSON.stringify(products));
-      renderProducts();
-      updateDashboard();
-
-      updateSyncStatus('loading', 'Guardando...');
-      try {
-        const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Master-Key': MASTER_KEY
-          },
-          body: JSON.stringify({ products })
-        });
-        if (res.ok) {
-          updateSyncStatus('success', 'Sincronizado en Nube');
-        } else {
-          updateSyncStatus('success', 'Guardado en Local');
-        }
-      } catch (e) {
-        updateSyncStatus('success', 'Guardado en Local');
-      }
-    }
-
     function updateSyncStatus(type, message) {
       const el = document.getElementById('sync-status');
       if (type === 'loading') {
@@ -577,8 +533,8 @@
       tbody.appendChild(tr);
     }
 
-    // Compresión ultra ligera en el dispositivo (~2.5 KB por imagen para no superar límites de JSONBin)
-    function processImage(event) {
+    // Compresión inteligente directa
+    function processAndCompressImage(event) {
       const file = event.target.files[0];
       if (!file) return;
 
@@ -589,7 +545,7 @@
           const canvas = document.createElement('canvas');
           let width = img.width;
           let height = img.height;
-          const maxDim = 160;
+          const maxDim = 320;
 
           if (width > height) {
             if (width > maxDim) { height *= maxDim / width; width = maxDim; }
@@ -602,17 +558,88 @@
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
 
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.25);
+          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.65);
 
+          document.getElementById('prod-img-base64').value = compressedBase64;
           const output = document.getElementById('img-preview');
-          output.src = compressedDataUrl;
+          output.src = compressedBase64;
           output.style.display = 'inline-block';
-          document.getElementById('prod-img-base64').value = compressedDataUrl;
-          document.getElementById('upload-status-text').innerHTML = `<i class="fas fa-check text-success"></i> Foto cargada`;
+          document.getElementById('upload-status-text').innerHTML = `<i class="fas fa-check text-success"></i> Foto lista`;
         };
         img.src = e.target.result;
       };
       reader.readAsDataURL(file);
+    }
+
+    async function saveProduct() {
+      const id = document.getElementById('prod-id').value;
+      const nombre = document.getElementById('prod-nombre').value.trim();
+      const imgData = document.getElementById('prod-img-base64').value;
+
+      if (!nombre) {
+        alert('Por favor complete el nombre de la prenda.');
+        return;
+      }
+
+      const saveBtn = document.getElementById('btn-save-prod');
+      saveBtn.disabled = true;
+      updateSyncStatus('loading', 'Guardando...');
+
+      try {
+        const matrizRows = document.querySelectorAll('#matrix-tbody tr');
+        const matrizStock = [];
+
+        matrizRows.forEach(row => {
+          const color = row.querySelector('.matrix-color').value.trim();
+          if (color) {
+            matrizStock.push({
+              color: color,
+              xs: Number(row.querySelector('.matrix-xs').value) || 0,
+              s: Number(row.querySelector('.matrix-s').value) || 0,
+              m: Number(row.querySelector('.matrix-m').value) || 0,
+              l: Number(row.querySelector('.matrix-l').value) || 0,
+              xl: Number(row.querySelector('.matrix-xl').value) || 0,
+              xxl: Number(row.querySelector('.matrix-xxl').value) || 0
+            });
+          }
+        });
+
+        const productData = {
+          nombre: nombre,
+          img: imgData || '',
+          estado: document.getElementById('prod-estado').value,
+          ocasion: document.getElementById('prod-ocasion').value,
+          nota: document.getElementById('prod-nota').value,
+          costoDirecto: Number(document.getElementById('prod-costo-directo').value) || 0,
+          costoAgregado: Number(document.getElementById('prod-costo-agregado').value) || 0,
+          precioVenta: Number(document.getElementById('prod-precio-venta').value) || 0,
+          matrizStock: matrizStock,
+          actualizadoEn: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        if (id) {
+          await db.collection("productos").doc(id).update(productData);
+        } else {
+          await db.collection("productos").add(productData);
+        }
+
+        bootstrap.Modal.getInstance(document.getElementById('modalProduct')).hide();
+      } catch (error) {
+        console.error("Error al guardar: ", error);
+        alert("Error al guardar: " + error.message);
+      } finally {
+        saveBtn.disabled = false;
+      }
+    }
+
+    async function deleteProduct(id) {
+      if (confirm('¿Seguro que deseas eliminar este artículo de la nube?')) {
+        try {
+          await db.collection("productos").doc(id).delete();
+        } catch (error) {
+          alert("Error al eliminar: " + error.message);
+        }
+      }
     }
 
     function renderProducts() {
@@ -775,7 +802,7 @@
       document.getElementById('prod-id').value = '';
       document.getElementById('prod-img-base64').value = '';
       document.getElementById('img-preview').style.display = 'none';
-      document.getElementById('upload-status-text').innerHTML = 'Tocar para Cámara o Galería';
+      document.getElementById('upload-status-text').innerHTML = 'Tocar para Galería o Cámara';
       document.getElementById('matrix-tbody').innerHTML = '';
       addMatrixRow('Negro', 0, 0, 0, 0, 0, 0);
 
@@ -818,71 +845,6 @@
       new bootstrap.Modal(document.getElementById('modalProduct')).show();
     }
 
-    function saveProduct() {
-      const id = document.getElementById('prod-id').value;
-      const nombre = document.getElementById('prod-nombre').value;
-      const img = document.getElementById('prod-img-base64').value;
-
-      if (!nombre) {
-        alert('Por favor complete el nombre de la prenda.');
-        return;
-      }
-
-      const matrizRows = document.querySelectorAll('#matrix-tbody tr');
-      const matrizStock = [];
-
-      matrizRows.forEach(row => {
-        const color = row.querySelector('.matrix-color').value.trim();
-        if (color) {
-          matrizStock.push({
-            color: color,
-            xs: Number(row.querySelector('.matrix-xs').value) || 0,
-            s: Number(row.querySelector('.matrix-s').value) || 0,
-            m: Number(row.querySelector('.matrix-m').value) || 0,
-            l: Number(row.querySelector('.matrix-l').value) || 0,
-            xl: Number(row.querySelector('.matrix-xl').value) || 0,
-            xxl: Number(row.querySelector('.matrix-xxl').value) || 0
-          });
-        }
-      });
-
-      const productData = {
-        id: id || 'prod_' + Date.now(),
-        nombre: nombre,
-        img: img,
-        estado: document.getElementById('prod-estado').value,
-        ocasion: document.getElementById('prod-ocasion').value,
-        nota: document.getElementById('prod-nota').value,
-        costoDirecto: Number(document.getElementById('prod-costo-directo').value) || 0,
-        costoAgregado: Number(document.getElementById('prod-costo-agregado').value) || 0,
-        precioVenta: Number(document.getElementById('prod-precio-venta').value) || 0,
-        matrizStock: matrizStock
-      };
-
-      if (id) {
-        const index = products.findIndex(p => p.id === id);
-        if (index !== -1) products[index] = productData;
-      } else {
-        products.push(productData);
-      }
-
-      // Guardado asegurado en memoria interna antes de subir
-      localStorage.setItem('maishan_local_products', JSON.stringify(products));
-      renderProducts();
-      updateDashboard();
-
-      bootstrap.Modal.getInstance(document.getElementById('modalProduct')).hide();
-      saveDataToCloud();
-    }
-
-    function deleteProduct(id) {
-      if (confirm('¿Seguro que deseas eliminar este artículo?')) {
-        products = products.filter(p => p.id !== id);
-        localStorage.setItem('maishan_local_products', JSON.stringify(products));
-        saveDataToCloud();
-      }
-    }
-
     function exportPDF() {
       const pdfList = document.getElementById('pdf-content-list');
       pdfList.innerHTML = '';
@@ -921,13 +883,6 @@
               </tr>
             `;
           });
-        } else {
-          matrixRows = `
-            <tr>
-              <td style="text-align: left; font-weight: bold; padding: 2px 4px;">General</td>
-              <td style="padding: 2px;">0</td><td style="padding: 2px;">0</td><td style="padding: 2px;">0</td><td style="padding: 2px;">0</td><td style="padding: 2px;">0</td><td style="padding: 2px;">0</td>
-            </tr>
-          `;
         }
 
         const tableHTML = `
