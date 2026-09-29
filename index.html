@@ -61,19 +61,39 @@
       color: var(--accent-color);
     }
 
-    /* Estilos de la Matriz de Talles y Colores */
+    /* Estilos de la Matriz de Talles y Colores con Botones + / - */
     .matrix-table {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       text-align: center;
     }
     .matrix-table th {
       background-color: #1a1a1a;
       color: #fff;
+      padding: 6px 4px;
+    }
+    .matrix-table td {
+      padding: 4px 2px;
+      vertical-align: middle;
     }
     .matrix-input {
-      width: 50px;
+      width: 36px;
       text-align: center;
-      padding: 2px;
+      padding: 2px 0;
+      margin: 0;
+      -moz-appearance: textfield;
+    }
+    .matrix-input::-webkit-outer-spin-button,
+    .matrix-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .btn-qty-step {
+      width: 22px;
+      height: 24px;
+      padding: 0;
+      line-height: 1;
+      font-weight: bold;
+      font-size: 0.85rem;
     }
 
     #pdf-template {
@@ -91,7 +111,7 @@
       border: 2px dashed #0d6efd;
       background-color: #f0f7ff;
       border-radius: 8px;
-      padding: 15px;
+      padding: 12px;
       text-align: center;
       cursor: pointer;
     }
@@ -264,7 +284,7 @@
     </div>
   </div>
 
-  <!-- Modal Agregar / Editar Producto con Matriz -->
+  <!-- Modal Agregar / Editar Producto con Matriz (+ / -) -->
   <div class="modal fade" id="modalProduct" tabindex="-1">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -332,21 +352,22 @@
                 <input type="number" id="prod-precio-venta" class="form-control" required value="0">
               </div>
 
-              <!-- Matriz de Talles (Horizontal) vs Colores (Vertical) -->
+              <!-- Matriz de Talles (XS a XXL) con Botones Mas y Menos -->
               <div class="col-12">
                 <hr>
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                  <h6 class="fw-bold mb-0">Matriz de Stock: Colores vs Talles</h6>
+                  <h6 class="fw-bold mb-0">Matriz de Stock: Colores vs Talles (XS a XXL)</h6>
                   <button type="button" class="btn btn-sm btn-outline-primary" onclick="addMatrixRow()">
                     <i class="fas fa-plus me-1"></i> Agregar Color
                   </button>
                 </div>
 
                 <div class="table-responsive">
-                  <table class="table table-bordered matrix-table align-middle">
+                  <table class="table table-bordered matrix-table align-middle mb-0">
                     <thead>
                       <tr>
-                        <th style="min-width: 120px;">Color (Vertical)</th>
+                        <th style="min-width: 100px;">Color (Vertical)</th>
+                        <th>XS</th>
                         <th>S</th>
                         <th>M</th>
                         <th>L</th>
@@ -356,7 +377,7 @@
                       </tr>
                     </thead>
                     <tbody id="matrix-tbody">
-                      <!-- Filas dinámicas de colores -->
+                      <!-- Filas dinámicas con botones + y - -->
                     </tbody>
                   </table>
                 </div>
@@ -404,6 +425,12 @@
       }
       configWhatsApp = localStorage.getItem('maishan_ws') || '';
       renderWhatsAppHeader();
+      
+      const localData = localStorage.getItem('maishan_local_products');
+      if (localData) {
+        try { products = JSON.parse(localData); } catch(e){}
+      }
+      
       loadDataFromCloud();
     });
 
@@ -470,19 +497,26 @@
         });
         if (res.ok) {
           const data = await res.json();
-          products = data.record.products || [];
+          if (data.record && Array.isArray(data.record.products)) {
+            products = data.record.products;
+            localStorage.setItem('maishan_local_products', JSON.stringify(products));
+          }
           renderProducts();
           updateDashboard();
           updateSyncStatus('success', 'Sincronizado');
         } else {
-          updateSyncStatus('error', 'Error al cargar');
+          updateSyncStatus('success', 'Modo Local Activo');
         }
       } catch (e) {
-        updateSyncStatus('error', 'Error de conexión');
+        updateSyncStatus('success', 'Modo Local Activo');
       }
     }
 
     async function saveDataToCloud() {
+      localStorage.setItem('maishan_local_products', JSON.stringify(products));
+      renderProducts();
+      updateDashboard();
+
       updateSyncStatus('loading', 'Guardando...');
       try {
         const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
@@ -494,14 +528,12 @@
           body: JSON.stringify({ products })
         });
         if (res.ok) {
-          updateSyncStatus('success', 'Sincronizado');
-          renderProducts();
-          updateDashboard();
+          updateSyncStatus('success', 'Guardado en Nube');
         } else {
-          updateSyncStatus('error', 'Error al guardar');
+          updateSyncStatus('success', 'Guardado en Local');
         }
       } catch (e) {
-        updateSyncStatus('error', 'Error de conexión');
+        updateSyncStatus('success', 'Guardado en Local');
       }
     }
 
@@ -519,18 +551,32 @@
       }
     }
 
-    // Funciones de Matriz en Modal
-    function addMatrixRow(colorName = '', s = 0, m = 0, l = 0, xl = 0, xxl = 0) {
+    // Genera celda con botones + y - para cada talle
+    function createQtyCellHTML(sizeClass, val) {
+      return `
+        <td>
+          <div class="d-flex align-items-center justify-content-center gap-1">
+            <button type="button" class="btn btn-sm btn-outline-secondary btn-qty-step" onclick="const inp=this.nextElementSibling; inp.value=Math.max(0, Number(inp.value)-1);">-</button>
+            <input type="number" class="form-control form-control-sm matrix-input ${sizeClass}" value="${val}" min="0">
+            <button type="button" class="btn btn-sm btn-outline-secondary btn-qty-step" onclick="const inp=this.previousElementSibling; inp.value=Number(inp.value)+1;">+</button>
+          </div>
+        </td>
+      `;
+    }
+
+    // Funciones de Matriz en Modal (XS a XXL)
+    function addMatrixRow(colorName = '', xs = 0, s = 0, m = 0, l = 0, xl = 0, xxl = 0) {
       const tbody = document.getElementById('matrix-tbody');
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><input type="text" class="form-control form-control-sm matrix-color" value="${colorName}" placeholder="Color (ej: Negro)"></td>
-        <td><input type="number" class="form-control form-control-sm matrix-input matrix-s" value="${s}" min="0"></td>
-        <td><input type="number" class="form-control form-control-sm matrix-input matrix-m" value="${m}" min="0"></td>
-        <td><input type="number" class="form-control form-control-sm matrix-input matrix-l" value="${l}" min="0"></td>
-        <td><input type="number" class="form-control form-control-sm matrix-input matrix-xl" value="${xl}" min="0"></td>
-        <td><input type="number" class="form-control form-control-sm matrix-input matrix-xxl" value="${xxl}" min="0"></td>
-        <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('tr').remove()"><i class="fas fa-times"></i></button></td>
+        ${createQtyCellHTML('matrix-xs', xs)}
+        ${createQtyCellHTML('matrix-s', s)}
+        ${createQtyCellHTML('matrix-m', m)}
+        ${createQtyCellHTML('matrix-l', l)}
+        ${createQtyCellHTML('matrix-xl', xl)}
+        ${createQtyCellHTML('matrix-xxl', xxl)}
+        <td><button type="button" class="btn btn-sm btn-outline-danger p-1" onclick="this.closest('tr').remove()"><i class="fas fa-times"></i></button></td>
       `;
       tbody.appendChild(tr);
     }
@@ -546,7 +592,7 @@
           const canvas = document.createElement('canvas');
           let width = img.width;
           let height = img.height;
-          const maxDim = 800;
+          const maxDim = 500;
 
           if (width > height) {
             if (width > maxDim) { height *= maxDim / width; width = maxDim; }
@@ -559,7 +605,7 @@
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
 
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75);
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.55);
 
           const output = document.getElementById('img-preview');
           output.src = compressedDataUrl;
@@ -599,18 +645,18 @@
         if (p.estado === 'RESERVADO') badgeClass = 'badge-status-reservado';
         if (p.estado === 'VENDIDO') badgeClass = 'badge-status-vendido';
 
-        // Renderizado de Matriz en la tarjeta
         let matrixRowsHTML = '';
         if (p.matrizStock && p.matrizStock.length > 0) {
-          p.matrizStock.forEach((m, colorIdx) => {
+          p.matrizStock.forEach((m) => {
             matrixRowsHTML += `
               <tr>
                 <td class="text-start fw-bold">${m.color}</td>
-                <td>${m.s}</td>
-                <td>${m.m}</td>
-                <td>${m.l}</td>
-                <td>${m.xl}</td>
-                <td>${m.xxl}</td>
+                <td>${m.xs || 0}</td>
+                <td>${m.s || 0}</td>
+                <td>${m.m || 0}</td>
+                <td>${m.l || 0}</td>
+                <td>${m.xl || 0}</td>
+                <td>${m.xxl || 0}</td>
               </tr>
             `;
           });
@@ -632,17 +678,17 @@
                 <strong class="fs-5 text-dark">$${Number(p.precioVenta).toLocaleString()}</strong>
               </div>
 
-              <!-- Tabla Matriz en Tarjeta -->
+              <!-- Tabla Matriz XS a XXL en Tarjeta -->
               <div class="bg-light p-1 rounded mb-2 border">
                 <table class="table table-sm table-bordered matrix-table mb-0">
                   <thead>
                     <tr>
                       <th class="text-start">Color</th>
-                      <th>S</th><th>M</th><th>L</th><th>XL</th><th>XXL</th>
+                      <th>XS</th><th>S</th><th>M</th><th>L</th><th>XL</th><th>XXL</th>
                     </tr>
                   </thead>
                   <tbody>
-                    ${matrixRowsHTML || '<tr><td colspan="6">Sin stock cargado</td></tr>'}
+                    ${matrixRowsHTML || '<tr><td colspan="7">Sin stock cargado</td></tr>'}
                   </tbody>
                 </table>
               </div>
@@ -706,6 +752,7 @@
         p.matrizStock.forEach(m => {
           msg += `• *${m.color}:* `;
           let tallesArr = [];
+          if (m.xs > 0) tallesArr.push(`XS (${m.xs}u)`);
           if (m.s > 0) tallesArr.push(`S (${m.s}u)`);
           if (m.m > 0) tallesArr.push(`M (${m.m}u)`);
           if (m.l > 0) tallesArr.push(`L (${m.l}u)`);
@@ -756,7 +803,7 @@
       document.getElementById('prod-img-base64').value = '';
       document.getElementById('img-preview').style.display = 'none';
       document.getElementById('matrix-tbody').innerHTML = '';
-      addMatrixRow('Negro', 0, 0, 0, 0, 0);
+      addMatrixRow('Negro', 0, 0, 0, 0, 0, 0);
 
       document.getElementById('modalProductTitle').innerText = 'Nuevo Artículo - MAISHAN';
       new bootstrap.Modal(document.getElementById('modalProduct')).show();
@@ -787,10 +834,10 @@
 
       if (p.matrizStock && p.matrizStock.length > 0) {
         p.matrizStock.forEach(m => {
-          addMatrixRow(m.color, m.s, m.m, m.l, m.xl, m.xxl);
+          addMatrixRow(m.color, m.xs || 0, m.s || 0, m.m || 0, m.l || 0, m.xl || 0, m.xxl || 0);
         });
       } else {
-        addMatrixRow('Negro', 0, 0, 0, 0, 0);
+        addMatrixRow('Negro', 0, 0, 0, 0, 0, 0);
       }
 
       document.getElementById('modalProductTitle').innerText = 'Editar Artículo - MAISHAN';
@@ -807,7 +854,6 @@
         return;
       }
 
-      // Extraer datos de la matriz
       const matrizRows = document.querySelectorAll('#matrix-tbody tr');
       const matrizStock = [];
 
@@ -816,6 +862,7 @@
         if (color) {
           matrizStock.push({
             color: color,
+            xs: Number(row.querySelector('.matrix-xs').value) || 0,
             s: Number(row.querySelector('.matrix-s').value) || 0,
             m: Number(row.querySelector('.matrix-m').value) || 0,
             l: Number(row.querySelector('.matrix-l').value) || 0,
@@ -880,7 +927,7 @@
         let matrixText = '';
         if (p.matrizStock) {
           p.matrizStock.forEach(m => {
-            matrixText += `<div><strong>${m.color}:</strong> S:${m.s} M:${m.m} L:${m.l} XL:${m.xl} XXL:${m.xxl}</div>`;
+            matrixText += `<div><strong>${m.color}:</strong> XS:${m.xs||0} S:${m.s||0} M:${m.m||0} L:${m.l||0} XL:${m.xl||0} XXL:${m.xxl||0}</div>`;
           });
         }
 
